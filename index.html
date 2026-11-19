@@ -145,6 +145,19 @@ select:focus{outline:2px solid var(--focus);outline-offset:-1px}
 .check input{width:16px;height:16px;accent-color:var(--electric)}
 .keystate{font-size:13px;color:var(--muted)}
 .keystate.ok{color:var(--ok)}
+.editor{margin-top:20px}
+.ed-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.ed-grid3{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr);gap:14px}
+@media (max-width:900px){.ed-grid3{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:640px){.ed-grid{grid-template-columns:minmax(0,1fr)}}
+.editor textarea{min-height:0;font-size:14px}
+.editor .field{align-content:start}
+.field small{color:var(--muted);font-size:12px}
+.ed-sub{font:500 17px/1.2 var(--f-head);color:var(--head);padding-top:6px}
+.jobs{display:grid;gap:14px}
+.jobcard{border:1px solid var(--line-strong);border-radius:var(--r);padding:16px;display:grid;gap:14px}
+.jobhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.jobhead b{font:600 15px/1.3 var(--f-head);color:var(--head);overflow-wrap:anywhere;min-width:0}
 .foot{max-width:1120px;margin:0 auto;padding-block:0 32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));color:var(--muted);font-size:12.5px}
 </style>
 
@@ -161,25 +174,11 @@ select:focus{outline:2px solid var(--focus);outline-offset:-1px}
   <div class="band-in">
     <img class="logo" src="data:image/png;base64,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" alt="ЛАНИТ ЭКСПЕРТИЗА" width="122" height="34">
     <h1>Конвертер резюме QA<span>в корпоративный шаблон</span></h1>
-    <p>Переносит резюме кандидата в шаблон компании и выдаёт готовый .docx или .pdf. Если вставить требования вакансии, Claude расставит акценты под неё, не добавляя опыта, которого нет в резюме.</p>
+    <p>Переносит резюме кандидата в шаблон компании и выдаёт готовый .docx или .pdf. Работает прямо в браузере, без нейросетей и внешних сервисов: файл резюме никуда не отправляется.</p>
   </div>
 </header>
 
 <div class="wrap">
-  <section class="panel conn" id="conn">
-    <div class="shead"><span class="num">00</span><h2>Подключение к Claude</h2></div>
-    <div class="conn-row">
-      <label class="field"><span>Ключ API Anthropic</span><input type="password" id="apiKey" placeholder="sk-ant-…" autocomplete="off" spellcheck="false"></label>
-      <label class="field"><span>Модель</span><select id="apiModel">
-        <option value="claude-sonnet-5-5">Claude Sonnet 5.5 — оптимально</option>
-        <option value="claude-opus-5-5">Claude Opus 5.5 — точнее, дороже</option>
-        <option value="claude-haiku-5-5">Claude Haiku 5.5 — быстрее, дешевле</option>
-      </select></label>
-    </div>
-    <div class="row"><label class="check"><input type="checkbox" id="apiRemember"> Запомнить ключ в этом браузере</label><span class="keystate" id="keyState"></span></div>
-    <p class="hint">Ключ создаётся в Claude Console: console.anthropic.com → API Keys. Резюме и ключ уходят напрямую из вашего браузера в API Anthropic, сайт их нигде не хранит. На общем компьютере не включайте «Запомнить».</p>
-  </section>
-
   <div class="grid">
     <form class="panel" id="form" novalidate>
       <section class="sec">
@@ -221,12 +220,13 @@ select:focus{outline:2px solid var(--focus);outline-offset:-1px}
       <section class="sec">
         <div class="shead"><span class="num">03</span><h2>Требование к вакансии</h2></div>
         <textarea id="vacancy" placeholder="Необязательно. Вставьте описание вакансии: обязанности, требования, стек. Например: «Тестирование REST API, SQL (PostgreSQL), Kafka, опыт в банковском домене…»"></textarea>
-        <p class="hint">Пусто — только перенос в шаблон. Заполнено — навыки и обязанности переставляются и формулируются под вакансию; новые навыки не придумываются, нехватки попадут в заметки.</p>
+        <p class="hint">Необязательно. Навыки и обязанности, совпадающие с вакансией, поднимутся наверх списков, а чего из вакансии нет в резюме, появится в заметках. Текст резюме не переписывается и ничего не добавляется.</p>
+        <div class="row"><button type="button" class="btn ghost small" id="applyVac" disabled>Применить к резюме</button><span class="tiny" id="vacNote"></span></div>
       </section>
 
       <section class="sec actions">
         <div class="cap">Сформировать файл</div>
-        <div class="notice warn" id="noClaude" hidden>Чтобы разбирать резюме, введите ключ API Anthropic в блоке «Подключение к Claude» вверху страницы.</div>
+        <p class="hint" id="noClaude">Сначала загрузите резюме. Файл собирается из полей редактора, который появится под формой.</p>
         <div class="row">
           <button type="submit" class="btn primary" id="go" disabled>Сформировать .DOCX</button>
           <button type="submit" class="btn primary" id="goPdf" disabled>Сформировать .PDF</button>
@@ -238,7 +238,7 @@ select:focus{outline:2px solid var(--focus);outline-offset:-1px}
     <section class="panel" id="out" aria-live="polite">
       <div id="viewIdle" class="sec">
         <div class="label">Результат</div>
-        <p class="hint">Загрузите резюме и нажмите «Сформировать .docx». Документ собирается по шаблону:</p>
+        <p class="hint">Загрузите резюме: разбор занимает секунду. Затем проверьте поля в редакторе под формой и сформируйте файл. Документ собирается по шаблону:</p>
         <dl class="map">
           <div><dt>Шапка</dt><span>ФИО, должность, телефон, email, фото справа; стаж в тестировании</span></div>
           <div><dt>Навыки</dt><span>«Тестирование» и «Ключевые технологии» в две колонки</span></div>
@@ -252,10 +252,10 @@ select:focus{outline:2px solid var(--focus);outline-offset:-1px}
         <div class="label">Работаю</div>
         <ol class="steps">
           <li id="st1">Читаю файл</li>
-          <li id="st2">Claude разбирает резюме<span id="st2x"></span></li>
+          <li id="st2">Разбираю резюме<span id="st2x"></span></li>
           <li id="st3">Собираю .docx по шаблону</li>
         </ol>
-        <p class="tiny">Разбор обычно занимает 30–90 секунд.</p>
+        <p class="tiny">Разбор занимает несколько секунд.</p>
       </div>
 
       <div id="viewDone" class="sec" hidden>
@@ -267,7 +267,7 @@ select:focus{outline:2px solid var(--focus);outline-offset:-1px}
           <button type="button" class="btn ghost" id="dlPdf">Скачать .PDF</button>
           <span class="tiny" id="dlNote"></span>
         </div>
-        <p class="tiny">Шапку, фото и контакты можно поменять слева и скачать снова, повторный разбор не нужен. Имя файла: фамилия для полной шапки, «Имя Ф.» для сокращённой.</p>
+        <p class="tiny">Правки в редакторе ниже и в шапке слева сразу попадают в файл. Имя файла: фамилия для полной шапки, «Имя Ф.» для сокращённой.</p>
         <div class="sec" id="notesBox">
           <div class="label">Что проверить</div>
           <ul class="notes" id="rNotes"></ul>
@@ -280,9 +280,598 @@ select:focus{outline:2px solid var(--focus);outline-offset:-1px}
       </div>
     </section>
   </div>
+
+  <section class="panel editor" id="editor" hidden>
+    <div class="shead"><span class="num">04</span><h2>Проверка и правка</h2></div>
+    <p class="hint">Резюме разобрано автоматически. Проверьте поля: всё, что здесь написано, попадёт в файл. Пункты списков пишите каждый с новой строки.</p>
+    <div class="ed-grid" id="edTop"></div>
+    <div class="ed-grid" id="edSkills"></div>
+    <div class="ed-sub">Места работы</div>
+    <div class="jobs" id="edJobs"></div>
+    <div><button type="button" class="btn ghost small" id="edAddJob">Добавить место работы</button></div>
+    <div class="ed-grid" id="edEdu"></div>
+  </section>
 </div>
 
 <script src="lib/jszip.min.js"></script>
+<script>
+/* Rule-based resume parser: text of a resume -> data for the corporate template.
+   No network, no AI. Tuned on hh.ru exports (PDF/DOCX/RTF), Habr Career, LANIT internal CVs and the template itself. */
+const ResumeParser = (() => {
+  "use strict";
+  const MONTHS = [["январ", 1], ["феврал", 2], ["март", 3], ["апрел", 4], ["ма[йя]", 5], ["июн", 6], ["июл", 7], ["август", 8], ["сентябр", 9], ["октябр", 10], ["ноябр", 11], ["декабр", 12],
+    ["jan", 1], ["feb", 2], ["mar", 3], ["apr", 4], ["may", 5], ["jun", 6], ["jul", 7], ["aug", 8], ["sep", 9], ["oct", 10], ["nov", 11], ["dec", 12]];
+  const MON = "(?:январ[а-яё]*|феврал[а-яё]*|март[а-яё]*|апрел[а-яё]*|ма[йя]|июн[а-яё]*|июл[а-яё]*|август[а-яё]*|сентябр[а-яё]*|октябр[а-яё]*|ноябр[а-яё]*|декабр[а-яё]*|jan[a-z]*|feb[a-z]*|mar[a-z]*|apr[a-z]*|may|jun[a-z]*|jul[a-z]*|aug[a-z]*|sep[a-z]*|oct[a-z]*|nov[a-z]*|dec[a-z]*)\\.?";
+  const DATE = `(?:${MON}\\s+\\d{4}|\\d{1,2}[./]\\d{1,2}[./]\\d{4}|\\d{1,2}[./]\\d{4}|\\d{4}(?:\\s*г\\.?)?)`;
+  const NOW = "(?:(?:по\\s+)?настоящее\\s+время|(?:по\\s+)?наст\\.?\\s*время|по\\s+нас\\.?\\s*время|по\\s+н\\.?\\s*в\\.?|н\\.\\s*в\\.|сейчас|present|now|current|till now|по\\s+сегодняшний\\s+день)";
+  const DASH = "\\s*(?:[—–-]+|по|to)\\s*";
+  const RE_PERIOD = new RegExp(`(${DATE})${DASH}(${DATE}|${NOW})`, "i");
+  const RE_START_ONLY = new RegExp(`^(${DATE})\\s*[—–-]+\\s*$`, "i");
+  const RE_END_AT_START = new RegExp(`^(${DATE}|${NOW})(?=\\s|$|[,.;)])`, "i");
+  const RE_DURATION = /^\(?\s*(?:\d+\s*(?:год|года|лет|г\.)\s*)?(?:\d+\s*(?:месяц|месяца|месяцев|мес\.?))?\s*\)?$/i;
+  const RE_DURATION_PREFIX = /^\(?\s*((?:\d+\s*(?:год|года|лет)(?![а-яёa-z0-9_])\s*)?(?:\d+\s*(?:месяц|месяца|месяцев)(?![а-яёa-z0-9_]))?)\s*\)?\s*/i;
+  const RE_BULLET = /^\s*(?:[-–—•●▪◦·*‣⁃✓✔➢►]+|\d{1,2}[.)](?!\d))\s*/;
+  const RE_ROLE = /(тестиров|тестер|tester|\bqa\b|qa[- ]|quality|инженер|engineer|специалист|specialist|аналитик|analyst|разработчик|developer|программист|lead|лид(?![а-яё])|тимлид|руководител|менеджер|manager|стаж[её]р|intern|консультант|support|поддержк|внедрени|администратор|architect|архитектор|automation|автоматизатор|devops|sdet)/i;
+  const RE_LOCATION = /(www\.|https?:\/\/|\.(ru|com|рф|net|org|io|pro|tech|su)(?![а-яёa-z0-9_])\/?|^[А-ЯЁ][а-яё-]+(?:-[А-ЯЁ][а-яё-]+)?(,\s*[^,]{0,40})?$)/;
+  const STOP_COMPANY = /^(ооо|оао|зао|пао|ао|ип|нао|фгуп|гуп|муп|llc|ltd|inc)\s+/i;
+
+  const SECTION_DEFS = [
+    ["exp", /^(опыт работы|сведения о трудовой деятельности|профессиональный опыт|трудовая деятельность|места работы|опыт работы в тестировании|work experience|experience|employment history)(?![а-яёa-z0-9_])/i],
+    ["edu", /^(образование|education|основное образование)(?![а-яёa-z0-9_])/i],
+    ["courses", /^(повышение квалификации|курсы|дополнительное обучение|дополнительное образование|сертификаты|сертификация|тренинги|certificates|certifications|courses|электронные сертификаты)(?![а-яёa-z0-9_])/i],
+    ["skills", /^(ключевые навыки|навыки и инструменты|навыки|профессиональные навыки|технические навыки|hard skills|skills|компетенции)(?![а-яёa-z0-9_])/i],
+    ["tech", /^(ключевые технологии|технологии и инструменты|инструменты|стек технологий|стек)(?![а-яёa-z0-9_])/i],
+    ["lang", /^(знание (иностранных )?языков|иностранные языки|языки|английский язык|languages)(?![а-яёa-z0-9_])/i],
+    ["about", /^(обо мне|о себе|дополнительная информация|профиль|summary|about me|about)(?![а-яёa-z0-9_])/i],
+    ["desired", /^(желаемая должность)/i],
+    ["duties", /^(обязанности|функциональные обязанности)\s*:?\s*$/i],
+    ["other", /^(опыт вождения|рекомендации|портфолио|тесты, экзамены|гражданство, время в пути|soft skills|личные качества|хобби|увлечения|контакты|контактная информация)(?![а-яёa-z0-9_])/i],
+  ];
+  const TEMPLATE_LABELS = /^(период|о проекте|место работы \/ должность|характер работ, проекты, в которых участвовал|название учебного заведения|название факультета|специальность|присвоенная степень \/ звание|уровень|курс \/ сертификат|тестирование|ключевые технологии)$/i;
+
+  // tools dictionary: [category, canonical name, regexp]
+  const TOOLS = [
+    ["tms", "Jira", /\bjira\b|джир[аеуы]/i], ["tms", "Confluence", /confluence/i], ["tms", "TestRail", /test\s?rail/i], ["tms", "Zephyr", /zephyr/i], ["tms", "Test IT", /test\s?it\b/i],
+    ["tms", "Allure TestOps", /testops/i], ["tms", "Qase", /\bqase\b/i], ["tms", "YouTrack", /you\s?track/i], ["tms", "Redmine", /redmine/i], ["tms", "Azure DevOps", /azure\s?devops/i], ["tms", "TestLink", /testlink/i], ["tms", "Kaiten", /kaiten/i],
+    ["api", "Postman", /postman/i], ["api", "Swagger", /swagger/i], ["api", "Insomnia", /insomn?ia|insomina/i], ["api", "SoapUI", /soap\s?ui/i], ["api", "Charles", /\bcharles\b/i], ["api", "Fiddler", /fiddler/i],
+    ["api", "DevTools", /dev\s?tools/i], ["api", "Proxyman", /proxyman/i], ["api", "curl", /\bcurl\b/i], ["api", "REST API", /\brest\b/i], ["api", "SOAP", /\bsoap\b(?!\s?ui)/i], ["api", "gRPC", /grp[cс]/i], ["api", "JSON", /\bjson\b/i], ["api", "XML", /\bxml\b/i], ["api", "WebSocket", /websocket/i],
+    ["db", "SQL", /\bsql\b/i], ["db", "PostgreSQL", /postgre/i], ["db", "MySQL", /mysql/i], ["db", "Oracle", /oracle/i], ["db", "MS SQL", /ms\s?sql|mssql|sql server/i], ["db", "MongoDB", /mongo/i], ["db", "Redis", /redis/i],
+    ["db", "ClickHouse", /clickhouse/i], ["db", "DBeaver", /dbeaver/i], ["db", "pgAdmin", /pgadmin/i], ["db", "Toad", /\btoad\b/i], ["db", "InfluxDB", /influx/i],
+    ["infra", "Kafka", /kafk|кафк/i], ["infra", "RabbitMQ", /rabbit/i], ["infra", "Docker", /docker/i], ["infra", "Kubernetes", /kubernet|\bk8s\b/i], ["infra", "OpenShift", /open\s?sh?ift/i], ["infra", "Linux", /linux|линукс/i],
+    ["infra", "Git", /\bgit\b/i], ["infra", "GitLab", /gitlab/i], ["infra", "GitHub", /github/i], ["infra", "Bitbucket", /bitbucket/i], ["infra", "Jenkins", /jenkins/i], ["infra", "TeamCity", /team\s?city/i], ["infra", "CI/CD", /ci\s?\/\s?cd/i],
+    ["infra", "Portainer", /portainer/i], ["infra", "MinIO", /minio/i], ["infra", "Temporal", /tempor(t)?al/i], ["infra", "Istio", /istio/i], ["infra", "Nginx", /nginx/i], ["infra", "WinSCP", /winscp/i], ["infra", "PuTTY", /putty|pytty/i], ["infra", "MobaXterm", /mobaxterm/i], ["infra", "Bash", /\bbash\b/i],
+    ["logs", "Kibana", /kibana/i], ["logs", "Grafana", /grafana/i], ["logs", "Sentry", /sentry/i], ["logs", "ELK", /\belk\b/i], ["logs", "SEQ", /\bseq\b/i], ["logs", "Prometheus", /prometheus/i], ["logs", "Zabbix", /zabbix/i], ["logs", "Graylog", /graylog/i], ["logs", "OpenSearch", /opensearch/i],
+    ["mobile", "Android Studio", /android\s?studio/i], ["mobile", "Xcode", /xcode/i], ["mobile", "adb", /\badb\b/i], ["mobile", "BrowserStack", /browser\s?stack/i], ["mobile", "Firebase", /firebase/i], ["mobile", "TestFlight", /testflight/i], ["mobile", "Appium", /appium/i],
+    ["load", "JMeter", /jmeter/i], ["load", "k6", /\bk6\b/i], ["load", "LoadRunner", /loadrunner/i], ["load", "Gatling", /gatling/i],
+    ["auto", "Python", /python/i], ["auto", "Java", /\bjava\b(?!\s?script)/i], ["auto", "JavaScript", /javascript|\bjs\b/i], ["auto", "TypeScript", /typescript/i], ["auto", "Kotlin", /kotlin/i], ["auto", "C#", /\bc#/i],
+    ["auto", "Selenium", /selenium/i], ["auto", "Selenide", /selenide/i], ["auto", "Playwright", /playwright/i], ["auto", "Cypress", /cypress/i], ["auto", "pytest", /pytest/i], ["auto", "JUnit", /junit/i], ["auto", "TestNG", /testng/i],
+    ["auto", "Allure", /allure(?!\s?testops)/i], ["auto", "RestAssured", /rest\s?assured/i], ["auto", "Maven", /maven/i], ["auto", "Gradle", /gradle/i], ["auto", "Cucumber", /cucumber/i],
+    ["design", "Figma", /figma|фигм/i], ["design", "Pixso", /pixso/i], ["design", "Zeplin", /zeplin/i], ["design", "Miro", /\bmiro\b/i],
+  ];
+  const CAT_LABEL = { tms: "Системы тестирования и документации", api: "Тестирование API", db: "Работа с БД", infra: "Брокеры сообщений, контейнеры, CI/CD", logs: "Логи и мониторинг", mobile: "Мобильное тестирование", load: "Нагрузочное тестирование", auto: "Автоматизация и языки программирования", design: "Дизайн-макеты" };
+  const CAT_ORDER = ["tms", "api", "db", "infra", "logs", "mobile", "load", "auto", "design"];
+  const TYPO = [[/Temportal/g, "Temporal"], [/Insomina/gi, "Insomnia"], [/Kubernets/g, "Kubernetes"], [/PyTTY/g, "PuTTY"], [/REST AP\|/g, "REST API"], [/НТТР/g, "HTTP"], [/OpenSifht/g, "OpenShift"]];
+  const NAMES = new Set("александр алексей анатолий андрей антон аркадий артём артем арсений богдан борис вадим валентин валерий василий виктор виталий владимир владислав всеволод вячеслав геннадий георгий герман глеб григорий давид даниил данил данила денис дмитрий евгений егор захар иван игорь илья кирилл константин лев леонид максим марат марк матвей михаил никита николай олег павел пётр петр роман руслан савелий семён семен сергей станислав степан тимофей тимур фёдор федор филипп эдуард юрий ярослав асхат ринат рустам айдар азат алина алла алёна алена алиса анастасия ангелина анна антонина валентина валерия вера вероника виктория галина дарья диана ева евгения екатерина елена елизавета жанна зоя инна ирина карина кира кристина ксения лариса лидия любовь людмила маргарита марина мария милана надежда наталья наталия нина оксана олеся ольга полина раиса регина светлана снежана софия софья таисия тамара татьяна ульяна элина юлия яна".split(" "));
+
+  // ---------- helpers ----------
+  const clean = s => String(s || "").replace(/[   ]/g, " ").replace(/[​﻿]/g, "").replace(/\s+/g, " ").trim();
+  const LAT2CYR = { a: "а", c: "с", e: "е", o: "о", p: "р", x: "х", y: "у", A: "А", B: "В", C: "С", E: "Е", H: "Н", K: "К", M: "М", O: "О", P: "Р", T: "Т", X: "Х" };
+  const CYR2LAT = Object.fromEntries(Object.entries(LAT2CYR).map(([k, v]) => [v, k]));
+  function fixScripts(s) {
+    return s.replace(/[A-Za-zА-Яа-яЁё]+/g, w => {
+      const cyr = (w.match(/[А-Яа-яЁё]/g) || []).length, lat = w.length - cyr;
+      if (!cyr || !lat || Math.min(cyr, lat) > 1) return w;
+      if (cyr >= lat) return w.replace(/[A-Za-z]/g, ch => LAT2CYR[ch] || ch);
+      return w.replace(/[А-Яа-яЁё]/g, ch => CYR2LAT[ch] || ch);
+    });
+  }
+  function fixText(s) { s = fixScripts(clean(s)); for (const [re, to] of TYPO) s = s.replace(re, to); return s; }
+  const cap = s => s ? s[0].toUpperCase() + s.slice(1) : s;
+  const trimPunct = s => s.replace(/^[\s;,.:—–-]+/, "").replace(/[\s;,]+$/, "").replace(/(?<![.]{2}|\b(?:т\.д|т\.п|и\.т\.д|др))\.$/, "").trim();
+  const plural = (n, a, b, c) => { const m10 = n % 10, m100 = n % 100; return m10 === 1 && m100 !== 11 ? a : m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14) ? b : c; };
+  function monthOf(s) { const t = s.toLowerCase(); for (const [re, n] of MONTHS) if (new RegExp("^" + re).test(t)) return n; return null; }
+  function parseDate(s, isEnd) {
+    s = clean(s).replace(/\s*г\.?$/, "");
+    if (new RegExp("^" + NOW + "$", "i").test(s)) return { now: true };
+    let m;
+    if ((m = s.match(/^(\d{1,2})[./](\d{1,2})[./](\d{4})$/))) return { y: +m[3], m: +m[2] };
+    if ((m = s.match(/^(\d{1,2})[./](\d{4})$/))) return { y: +m[2], m: +m[1] };
+    if ((m = s.match(/^(\d{4})$/))) return { y: +m[1], m: isEnd ? 12 : 1, yearOnly: true };
+    if ((m = s.match(/^([A-Za-zА-Яа-яЁё]+)\.?\s+(\d{4})$/))) return { y: +m[2], m: monthOf(m[1]) || (isEnd ? 12 : 1) };
+    return null;
+  }
+  const fmtDate = d => !d ? "" : d.now ? "по наст. время" : d.yearOnly ? String(d.y) : String(d.m).padStart(2, "0") + "." + d.y;
+  const fmtPeriod = (a, b) => [fmtDate(a), fmtDate(b)].filter(Boolean).join(" – ");
+  function monthsBetween(a, b, today) {
+    if (!a) return 0; const e = b && !b.now ? b : { y: today.getFullYear(), m: today.getMonth() + 1 };
+    return Math.max(0, (e.y - a.y) * 12 + (e.m - a.m) + 1);
+  }
+  const isBullet = s => RE_BULLET.test(s) && !/^\d{1,2}[.)]\d/.test(s);
+  const unbullet = s => s.replace(RE_BULLET, "").trim();
+  function sectionOf(line) {
+    const l = clean(line).replace(/[:：]\s*$/, "");
+    if (l.length > 60) return null;
+    for (const [type, re] of SECTION_DEFS) if (re.test(l)) {
+      const rest = l.replace(re, "").trim();
+      if (!rest || /^[—–:-]/.test(rest) || /^\d/.test(rest.replace(/^[—–:-]\s*/, "")) || type === "exp" && /^(—|-|–)?\s*\d/.test(rest)) return type;
+      if (type === "lang" && rest.length < 30) return type;
+      if (type === "desired") return type;
+      if ((/^,/.test(rest) || /^и\s/.test(rest)) && l.length < 45) return type;
+      return null;
+    }
+    return null;
+  }
+
+  // ---------- main ----------
+  function parse(rawText, opts = {}) {
+    const isPdf = opts.src === "pdf";
+    const today = opts.today || new Date();
+    // 1. lines
+    let lines = [];
+    for (let raw of String(rawText || "").split(/\n/)) {
+      raw = raw.replace(/[​﻿]/g, "");
+      const parts = isPdf ? raw.split(/\s{3,}|\t+/) : raw.split(/\t+/);
+      for (let p of parts) { p = fixScripts(clean(p)); if (p) lines.push(p); }
+    }
+    lines = lines.filter(l => !/резюме обновлено/i.test(l) && !/^стр(\.|аница)\s*\d+/i.test(l) && !/^\d{1,2}$/.test(l));
+
+    const notes = [];
+    // 2. contacts & name
+    const all = lines.join("\n");
+    const phone = (all.match(/(?:\+7|(?<!\d)8)[\s(.-]*\d{3}[\s).-]*\d{3}[\s.-]*\d{2}[\s.-]*\d{2}(?!\d)/) || [""])[0].trim();
+    const email = (all.match(/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/) || [""])[0];
+    let nameFull = "";
+    const NAME_RE = /^[А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?(?:\s+[А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?){1,2}$/;
+    const SHORT_RE = /^[А-ЯЁ][а-яё]+\s+[А-ЯЁ]\.$/;
+    const UPPER_RE = /^[А-ЯЁ-]{2,}(?:\s+[А-ЯЁ-]{2,}){1,2}$/;
+    const NOT_NAME = /^(резюме|опыт|образование|навыки|желаемая|специализации|мужчина|женщина|профиль|ключевые|сведения|профессиональн|тестировщик|инженер|ведущий|старший|младший)/i;
+    for (const l of lines.slice(0, 40)) { const m = l.match(/^(?:ф\.?\s?и\.?\s?о\.?|фио)\s*[:：]\s*(.+)$/i); if (m) { nameFull = clean(m[1]); break; } }
+    if (!nameFull) for (let i = 0; i < Math.min(lines.length, 8); i++) {
+      const l = lines[i];
+      if (NOT_NAME.test(l)) continue;
+      if (NAME_RE.test(l)) { nameFull = l; const nx = lines[i + 1]; if (l.split(" ").length === 2 && nx && /^[А-ЯЁ][а-яё]+(вич|вна|ична|ич|кызы|оглы)$/.test(nx)) nameFull += " " + nx; break; }
+      if (SHORT_RE.test(l)) { nameFull = l; break; }
+      if (/^[А-ЯЁ]{2,}\s+[А-ЯЁ]\.$/.test(l)) { nameFull = l[0] + l.slice(1, l.indexOf(" ")).toLowerCase() + l.slice(l.indexOf(" ")); break; }
+      if (UPPER_RE.test(l) && !TEMPLATE_LABELS.test(l)) { nameFull = l.toLowerCase().replace(/(^|[\s-])([а-яё])/g, (m, a, b) => a + b.toUpperCase()); break; }
+    }
+    // a fuller name later in the text (e.g. "Полина Б." and later "Бойко Полина Александровна")
+    if (SHORT_RE.test(nameFull)) { const first = nameFull.split(" ")[0]; const full = lines.slice(0, 40).find(l => NAME_RE.test(l) && l.split(" ").length === 3 && l.includes(first)); if (full) nameFull = full; }
+    let nameShort = "";
+    if (SHORT_RE.test(nameFull)) nameShort = nameFull;
+    else if (nameFull) {
+      const w = nameFull.split(" ");
+      if (w.length >= 2) { const firstIsName = NAMES.has(w[0].toLowerCase()) && !NAMES.has(w[1].toLowerCase()); nameShort = firstIsName ? `${w[0]} ${w[1][0]}.` : `${w[1]} ${w[0][0]}.`; if (firstIsName && w.length === 2) nameFull = `${w[1]} ${w[0]}`; }
+    }
+
+    // 3. sections
+    const secAt = lines.map(sectionOf);
+    // the skills/tech headings of the template come right before list content; "Навыки" with inline content (hh docx) handled by split above
+    const firstIdx = t => secAt.indexOf(t);
+    const expIdx = firstIdx("exp");
+    // period anchors
+    const anchors = [];
+    for (let i = 0; i < lines.length; i++) {
+      const l = lines[i];
+      let m = l.match(RE_PERIOD);
+      if (m) {
+        const before = l.slice(0, m.index).trim(), after = l.slice(m.index + m[0].length).trim();
+        anchors.push({ i, j: i, start: parseDate(m[1]), end: parseDate(m[2], true), before, after, raw: l });
+        continue;
+      }
+      const mm = l.match(new RegExp(`^(${DATE})\\s*[—–-]+\\s*(${MON})$`, "i"));
+      if (mm) { for (let k = 1; k <= 2 && i + k < lines.length; k++) { const yy = lines[i + k].match(/^(\d{4})$/); if (yy) { anchors.push({ i, j: i + k, start: parseDate(mm[1]), end: parseDate(mm[2] + " " + yy[1], true), before: "", after: lines.slice(i + 1, i + k).join(" "), raw: l, split: true }); break; } } if (anchors.length && anchors[anchors.length - 1].i === i) continue; }
+      m = l.match(RE_START_ONLY);
+      if (m) {
+        for (let k = 1; k <= 2 && i + k < lines.length; k++) {
+          const e = lines[i + k].match(RE_END_AT_START);
+          if (e) { const mid = lines.slice(i + 1, i + k).join(" "); anchors.push({ i, j: i + k, start: parseDate(m[1]), end: parseDate(e[1], true), before: "", after: [mid, lines[i + k].slice(e[0].length).trim()].filter(Boolean).join(" "), raw: l, split: true }); break; }
+        }
+      }
+    }
+    // experience region: from exp header (or first anchor) to the first education/courses/lang/about header after the last job anchor
+    const stopTypes = new Set(["edu", "courses", "lang", "about", "desired"]);
+    let expStart = expIdx >= 0 ? expIdx : (anchors[0] ? Math.max(0, anchors[0].i - 3) : -1);
+    let expEnd = lines.length;
+    if (expStart >= 0) for (let i = expStart + 1; i < lines.length; i++) if (stopTypes.has(secAt[i])) { expEnd = i; break; }
+    // job anchors = anchors inside the experience region, excluding "Период работы:" style fields
+    let jobAnchors = anchors.filter(a => a.i > expStart && a.i < expEnd && !/^(период работы|период|дата)\s*[:：]?$/i.test(a.before) && (a.before === "" || a.before.length < 70));
+    // sub-projects ("Проект ВТБ • Ноябрь 2025 - настоящее время") are not separate jobs
+    const isSubProject = a => /^(проект|предыдущие проекты|project)(?![а-яёa-z0-9_])/i.test(a.before.replace(/[•·|]\s*$/, "").trim()) || /^(проект|project)(?![а-яёa-z0-9_])/i.test(a.after);
+    // orientation: header lines (company, role) before or after the period line
+    let pre = 0;
+    if (jobAnchors.length && expIdx >= 0) {
+      const gap = lines.slice(expIdx + 1, jobAnchors[0].i).filter(l => !RE_DURATION.test(l) && !TEMPLATE_LABELS.test(l));
+      if (gap.length >= 1 && gap.length <= 3 && gap.every(l => l.length < 80 && !isBullet(l)) && !jobAnchors[0].before) pre = gap.length;
+    }
+
+    // 4. jobs
+    const jobs = [];
+    let current = null;
+    const finishLines = (job, body) => parseJobBody(job, body, isPdf);
+    for (let k = 0; k < jobAnchors.length; k++) {
+      const a = jobAnchors[k], next = jobAnchors[k + 1];
+      if (isSubProject(a) && current) {
+        const name = clean((a.before || a.after).replace(/[•·|]+/g, " ")).replace(/^(предыдущие\s+)?проект(ы)?\s*/i, "").trim();
+        current.subs.push({ i: a.i, j: a.j, label: name, period: fmtPeriod(a.start, a.end) });
+        continue;
+      }
+      let hdr = [];
+      if (pre) { hdr = lines.slice(Math.max(expStart + 1, a.i - pre), a.i).filter(l => !RE_DURATION.test(l)); }
+      const job = { start: a.start, end: a.end, period: fmtPeriod(a.start, a.end), company: "", role: "", fields: [], description: "", extras: [], duties: [], tech: "", subs: [], _i: a.i, _j: a.j, _hdr: hdr, _a: a };
+      jobs.push(job); current = job;
+    }
+    // body ranges
+    jobs.forEach((job, k) => {
+      const next = jobs[k + 1];
+      const endIdx = next ? (pre ? next._i - next._hdr.length : next._i) : expEnd;
+      const a = job._a;
+      let body = lines.slice(job._j + 1, endIdx);
+      // inline variants: "ЛАНИТ • QA-инженер • Апрель 2024 - настоящее время", "Компания (Август 2024 – …)"
+      let inline = a.before.replace(/[•·|,]+\s*$/, "").trim();
+      if (inline) {
+        const parts = inline.split(/\s*[•·|]\s*/).filter(Boolean);
+        if (parts.length >= 2) { job.company = parts[0]; job.role = parts.slice(1).join(" "); }
+        else if (RE_ROLE.test(inline) && !job._hdr.length) job.role = inline; else job.company = inline;
+      }
+      let after = a.after.replace(/^\(?\s*\d+\s*(год|года|лет|месяц|месяца|месяцев)[^)]*\)?\s*,?\s*/i, "").replace(/^по состоянию на.*$/i, "").replace(/^[,.;:)\s]+/, "").trim();
+      if (job._hdr.length) { job.company = job.company || job._hdr[0]; if (job._hdr[1]) job.role = job.role || job._hdr.slice(1).join(" "); }
+      else if (after) { if (!job.company) job.company = after; }
+      // sub-projects inside this job: remove their lines from the body, keep their names for the description
+      const subIdx = new Set(job.subs.map(s => s.i));
+      body = body.filter((l, n) => !subIdx.has(job._j + 1 + n));
+      if (job.subs.length) job.fields.push({ label: "Проекты:", value: job.subs.map(s => s.label + (s.period ? ` (${s.period})` : "")).join("; ") });
+      finishLines(job, body);
+    });
+    // fallback: no periods at all -> one block from a duties-like section
+    if (!jobs.length) {
+      const di = secAt.findIndex(t => t === "duties" || t === "exp");
+      if (di >= 0) {
+        let e = lines.length; for (let i = di + 1; i < lines.length; i++) if (secAt[i] && secAt[i] !== "duties") { e = i; break; }
+        const job = { start: null, end: null, period: "", company: "", role: "", fields: [], description: "", extras: [], duties: [], tech: "", subs: [] };
+        job.company = "\u0000"; job.role = "\u0000"; parseJobBody(job, lines.slice(di + 1, e).filter(l => !/опыта в области/i.test(l)), isPdf); job.company = job.company.replace("\u0000", ""); job.role = job.role.replace("\u0000", "");
+        if (job.duties.length) { jobs.push(job); notes.push("Периоды работы не найдены: обязанности собраны в один блок, укажите компанию и период вручную."); }
+      }
+    }
+
+    // 5. other sections
+    const sectionLines = (type, opt = {}) => {
+      const out = [];
+      secAt.forEach((t, i) => {
+        if (t !== type) return;
+        if (opt.outsideExp && i > expStart && i < expEnd && expStart >= 0) return;
+        for (let k = i + 1; k < lines.length; k++) { if (secAt[k] && secAt[k] !== type) break; if (k > expStart && k < expEnd && type !== "exp" && expStart >= 0 && i < expStart) break; out.push(lines[k]); }
+      });
+      return out;
+    };
+    const education = parseEducation(sectionLines("edu", { outsideExp: true }));
+    const courses = parseCourses(sectionLines("courses", { outsideExp: true }));
+    const skillLines = [...sectionLines("skills", { outsideExp: true }), ...sectionLines("tech", { outsideExp: true })];
+    const aboutLines = sectionLines("about", { outsideExp: true });
+    const langLines = sectionLines("lang");
+    // hh: "Знание языков  Русский — Родной" lines inside skills
+    const langs = parseLanguages([...langLines, ...skillLines.filter(l => /^(русский|английский|немецкий|французский|испанский|итальянский|китайский|японский|турецкий|татарский|казахский|украинский)(?![а-яёa-z0-9_])/i.test(l))]);
+
+    // title
+    let title = "";
+    const di = secAt.indexOf("desired");
+    if (di >= 0) { const l = lines[di].replace(/^желаемая должность( и зарплата)?\s*[:：]?\s*/i, ""); title = l || lines[di + 1] || ""; }
+    if (!title) { const m = lines.slice(0, 15).map(l => l.match(/^должность\s*[:：]\s*(.+)$/i)).find(Boolean); if (m) title = m[1]; }
+    title = clean(title.replace(/\d[\d\s]*(₽|руб|rub|\$|€).*$/i, "").replace(/^\s*[—–-]\s*/, ""));
+    if (title && /^(специализации|тип занятости)/i.test(title)) title = "";
+    if (!title && lines[1] && RE_ROLE.test(lines[1]) && !/^(резюме|опыт|образование|навыки|профиль)/i.test(lines[1]) && lines[1].length < 60 && !RE_PERIOD.test(lines[1])) title = lines[1];
+    if (!title && jobs[0] && jobs[0].role) title = jobs[0].role;
+    if (!title) title = "Инженер по тестированию ПО";
+
+    // skills
+    const fullText = lines.join("\n");
+    const tmplSkills = parseTemplateSkills(lines);
+    const ownSkills = [];
+    const skillSec = sectionLines("skills", { outsideExp: true });
+    const hhStyle = skillSec.some(l => /^(знание языков|навыки)$/i.test(l)) || lines.some(l => /^знание языков/i.test(l));
+    for (const l0 of hhStyle ? [] : skillSec) {
+      const l = unbullet(l0);
+      if (/^[а-яё(]/.test(l) && ownSkills.length) { ownSkills[ownSkills.length - 1] += " " + l; continue; }
+      const words = l.split(/\s+/); const capsShare = words.filter(w => /^[A-ZА-ЯЁ]/.test(w)).length / words.length;
+      if (l.length < 12 || l.length > 220 || /^[^:]{3,45}:/.test(l) || (!/[,()]/.test(l) && capsShare > 0.5 && words.length > 3) || /^(знание языков|навыки)/i.test(l)) continue;
+      ownSkills.push(l);
+    }
+    const ownOk = ownSkills.filter(x => /тест|дефект|баг|документ|требован|api|sql|данн|анализ|взаимодейств|покрыти|регресс|автомат/i.test(x) && !/умение|коммуникаб|работа в команде/i.test(x));
+    let skills_testing = tmplSkills ? tmplSkills.testing : ownOk.length >= 4 && ownOk.length >= ownSkills.length / 2 ? ownSkills.map(x => cap(trimPunct(fixText(x)))).slice(0, 12) : buildTestingSkills(fullText, aboutLines, skillLines, jobs);
+    let skills_tech = tmplSkills ? tmplSkills.tech : buildTechSkills(fullText, skillLines);
+    if (langs && !skills_tech.some(g => /^язык/i.test(g.label))) skills_tech.push({ label: "Языки:", value: langs });
+
+    // experience line
+    const qaRe = /(тест|qa\b|qa[- ]|quality|качеств|sdet|автоматизатор|tester)/i;
+    const mergeMonths = list => {
+      const iv = list.filter(j => j.start).map(j => { const s = j.start.y * 12 + j.start.m; const e0 = j.end && !j.end.now ? j.end : { y: today.getFullYear(), m: today.getMonth() + 1 }; return [s, e0.y * 12 + e0.m]; }).sort((x, y) => x[0] - y[0]);
+      let total = 0, cur = null; for (const [s, e] of iv) { if (!cur || s > cur[1] + 1) { if (cur) total += cur[1] - cur[0] + 1; cur = [s, e]; } else cur[1] = Math.max(cur[1], e); } if (cur) total += cur[1] - cur[0] + 1; return total;
+    };
+    const qaM = mergeMonths(jobs.filter(j => qaRe.test(j.role) || qaRe.test(j.company + " " + j.duties.slice(0, 3).join(" ")) && !j.role));
+    const allM = mergeMonths(jobs);
+    let experience_line = "";
+    const yrs = m => Math.floor(m / 12);
+    const yLabel = y => `${y}+ ${plural(y, "год", "года", "лет")}`;
+    if (qaM >= 12) experience_line = (yrs(allM) - yrs(qaM) >= 1 && allM >= 24) ? `${yLabel(yrs(allM))} опыта в ИТ, ${yLabel(yrs(qaM))} в тестировании ПО` : `${yLabel(yrs(qaM))} опыта в области тестирования ПО`;
+    else if (qaM > 0) experience_line = `${qaM} ${plural(qaM, "месяц", "месяца", "месяцев")} опыта в области тестирования ПО`;
+    else if (allM >= 12) experience_line = `${yLabel(yrs(allM))} опыта в ИТ`;
+    else { const m = fullText.match(/(\d+)\+?\s*(?:год|года|лет)\s+опыта/i) || fullText.match(/опыт работы[^\n]{0,30}?(\d+)\s*(год|года|лет)/i); if (m) experience_line = `${m[1]}+ ${plural(+m[1], "год", "года", "лет")} опыта в области тестирования ПО`; }
+
+    // notes
+    notes.unshift("Резюме разобрано автоматически по правилам. Проверьте разделы в редакторе перед скачиванием.");
+    if (!jobs.length) notes.push("Места работы не распознаны: добавьте их в редакторе.");
+    const noRole = jobs.filter(j => !j.role).length; if (noRole) notes.push(`У ${noRole} ${plural(noRole, "места", "мест", "мест")} работы не найдена должность.`);
+    if (!education.length) notes.push("Образование не найдено.");
+    if (!nameFull) notes.push("ФИО не найдено: впишите его в поле «ФИО» слева.");
+    notes.push("Не переносятся: дата рождения, город, гражданство, зарплата, мессенджеры и соцсети.");
+
+    jobs.forEach(j => { delete j._i; delete j._j; delete j._hdr; delete j._a; delete j.subs; });
+    return { name_full: nameFull, name_short: nameShort, title: fixText(title), experience_line, phone: clean(phone), email, skills_testing, skills_tech, jobs, education, courses, notes };
+  }
+
+  // ---------- job body ----------
+  const SUB = [
+    ["duties", /^(обязанности|функциональные обязанности|задачи|основные задачи|чем занимал(ся|ась)|в обязан+ости входит|опыт работы|профессиональный опыт|выполняемые работы|функционал|зона ответственности|responsibilities)(?![а-яёa-z0-9_])/i],
+    ["ach", /^(достижения|ключевые результаты|результаты|ключевые достижения|успехи|achievements)(?![а-яёa-z0-9_])|результаты и достижения/i],
+    ["tech", /^(стек|стэк|технологии|инструменты|используемый стек|используемые технологии|стек технологий|tech stack|stack|окружение|tools)(?![а-яёa-z0-9_])/i],
+    ["desc", /^(описание проекта|о проекте|контекст проекта|краткое описание проекта|описание)(?![а-яёa-z0-9_])/i],
+  ];
+  const FIELD_RE = /^(архитектура|разновидность по|команда|сфера|соотношение backend\s*\/\s*frontend|соотношение тестирования|отрасль|домен|тип проекта|методология)\s*[:：–-]\s*(.+)$/i;
+  function parseJobBody(job, body, isPdf) {
+    const items = []; // {text, kind}
+    let mode = "start", desc = [], tech = [], extras = [], curExtra = null, seenDuty = false;
+    const projects = [];
+    // skip hh header lines before the role: location, durations, industries
+    let k = 0;
+    const isHeaderNoise = l => RE_DURATION.test(l) || /^•/.test(l) && !seenDuty || RE_LOCATION.test(l) && l.length < 60 && !RE_ROLE.test(l) || /^(информационные технологии|финансовый сектор|телекоммуникации|ит-консалтинг|услуги для бизнеса|государственные организации|розничная торговля|медицина|образовательные учреждения|страхование|промышленн|энергетика|транспорт|строительство|производство|электроника|интернет|банк)/i.test(l);
+    if (!job.company) {
+      while (k < body.length && (RE_DURATION.test(body[k]) || TEMPLATE_LABELS.test(body[k]))) k++;
+      if (k < body.length && body[k].length < 90 && !isBullet(body[k])) { job.company = body[k]; k++; }
+    }
+    if (!job.role) {
+      for (let s = k; s < Math.min(body.length, k + 12); s++) {
+        let l = body[s];
+        const dp = l.match(RE_DURATION_PREFIX); if (dp && dp[1] && l.length > dp[0].length) l = l.slice(dp[0].length).trim();
+        else if (RE_DURATION.test(l)) continue;
+        const lbl = l.match(/^(должность|проектная роль|роль|позиция)\s*[:：]\s*(.+)$/i);
+        if (lbl) { job.role = lbl[2]; k = s + 1; break; }
+        if (RE_ROLE.test(l) && l.length < 90 && !/^[-–—*•]/.test(l) && !/^\d+[.)]/.test(l) && !FIELD_RE.test(l) && !/^проект/i.test(l) && !/[.;]$/.test(l)) { job.role = l; k = s + 1; break; }
+        if (/^[-–—*]|^\d+[.)]\s/.test(l) || (/[.;]$/.test(l) && l.length > 60 && !l.startsWith("•")) || /^(проект|обязанности|задачи|достижения)/i.test(l)) break;
+      }
+    }
+    while (k < body.length && isHeaderNoise(body[k]) && !isBullet(body[k])) k++;
+    const rest = body.slice(k);
+    for (let n = 0; n < rest.length; n++) {
+      let l = rest[n];
+      const st = sectionOf(l); if (st && !["duties", "skills", "tech"].includes(st)) continue;
+      if (TEMPLATE_LABELS.test(l)) { if (/^технологии$/i.test(l)) mode = "tech"; else if (/^о проекте$/i.test(l)) mode = "start"; continue; }
+      const lbl = l.match(/^(должность|проектная роль|роль)\s*[:：]\s*(.+)$/i);
+      if (lbl) { if (!job.role) job.role = lbl[2]; continue; }
+      if (/^(период работы|период)\s*[:：]/i.test(l)) continue;
+      const proj = l.match(/^(?:проект(?![а-яё])\s*(?:[:：–-]\s*|(?=[«"“A-ZА-ЯЁ][^,]{0,50}$))|project\s*[:：–-]\s*)(.+)$/i);
+      if (proj && !isBullet(l) && l.length < 260) {
+        let name = proj[1].trim(), more = "";
+        const sp = name.match(/^(.{2,60}?)(?:\s+[—–-]\s+|:\s+)(.+)$/);
+        if (sp && name.length > 40) { name = sp[1]; more = sp[2]; }
+        projects.push(trimPunct(name)); if (more) desc.push(cap(more));
+        if (mode === "tech") mode = "start"; continue;
+      }
+      const fld = l.match(FIELD_RE);
+      if (fld && !isBullet(l)) { job.fields.push({ label: cap(fld[1].replace(/\s+/g, " ")) + ":", value: trimPunct(fld[2]) }); continue; }
+      // sub-headings
+      const bare = l.replace(/[:：]\s*$/, "").replace(/\s*\(.*\)\s*$/, "");
+      let sub = null;
+      if (!isBullet(l) && l.length < 70) for (const [t, re] of SUB) if (re.test(bare.toLowerCase()) || re.test(bare)) { sub = t; break; }
+      if (sub) {
+        const inl = l.includes(":") ? l.slice(l.indexOf(":") + 1).trim() : "";
+        mode = sub; curExtra = null;
+        if (sub === "ach") { curExtra = { label: "Достижения:", items: [] }; extras.push(curExtra); if (inl) curExtra.items.push(inl); }
+        else if (sub === "tech" && inl) tech.push(inl);
+        else if (sub === "desc" && inl) desc.push(inl);
+        else if (sub === "duties" && inl) items.push(inl);
+        continue;
+      }
+      if (mode === "tech") { const v = unbullet(l); tech.push(v.includes(":") && v.indexOf(":") < 40 ? v.slice(v.indexOf(":") + 1) : v); continue; }
+      const bul = isBullet(l);
+      const text = unbullet(l);
+      if (!text) continue;
+      const target = () => (mode === "ach" || (curExtra && mode === "extra")) ? curExtra.items : items;
+      if (bul) {
+        // sub-bullet of an item ending with ':'
+        const tgt = target();
+        if (mode !== "ach" && mode !== "extra" && tgt.length && /[:：]$/.test(tgt[tgt.length - 1]) && /^[-–—•·*]/.test(l) && /^\d/.test(rest.slice(0, n).reverse().find(x => isBullet(x) && /^\d/.test(x)) || "")) { tgt[tgt.length - 1] += " " + text + ";"; continue; }
+        tgt.push(text); seenDuty = true; if (mode === "start") mode = "duties"; continue;
+      }
+      // non-bullet line
+      const tgt = target();
+      const prev = tgt[tgt.length - 1];
+      const isGroupLabel = /[:：]$/.test(text) && /^[A-ZА-ЯЁ]/.test(text) && text.length < 60;
+      const continuation = !isGroupLabel && prev !== undefined && (isPdf ? !/[.;!?:]$/.test(prev) || /^[a-zа-яё(«"]/.test(text) : (/[,–-]$/.test(prev) && /^[a-zа-яё]/.test(text)));
+      if (continuation && (mode !== "start" || seenDuty)) { tgt[tgt.length - 1] = prev + (/-$/.test(prev) && /[а-яё]-$/i.test(prev) ? "" : " ") + text; continue; }
+      if (/[:：]$/.test(text) && text.length < 80 && seenDuty) { curExtra = { label: text, items: [] }; extras.push(curExtra); mode = "extra"; continue; }
+      if (mode === "start" && !seenDuty) {
+        if (isPdf && desc.length && !/[.;!?:]$/.test(desc[desc.length - 1])) desc[desc.length - 1] += " " + text; else desc.push(text);
+        continue;
+      }
+      if (mode === "extra" && curExtra) { curExtra.items.push(text); continue; }
+      tgt.push(text); seenDuty = true;
+    }
+    // description only (no bullets): paragraphs/sentences become duties, a leading project sentence stays as the description
+    if (!items.length && desc.length) {
+      const sentences = desc.flatMap(p => p.split(/(?<=[.;!?])\s+(?=[А-ЯЁA-Z])/)).map(x => x.trim()).filter(Boolean);
+      if (sentences.length >= 2) {
+        const first = [];
+        while (sentences.length > 1 && sentences[0].length < 140 && /^(проект|работаю|работал|разработка и развитие|система|сервис|приложение|платформа|внутренн|продукт|мобильное|веб-|web-|десктоп)/i.test(sentences[0])) first.push(sentences.shift());
+        desc = first; for (const x of sentences) items.push(x);
+      }
+    }
+    if (!items.length && desc.length && !projects.length && desc.join(" ").length < 600) { items.push(desc.join(" ")); desc = []; }
+    // split long comma-lists that hh users write as one paragraph ("Обучение..., проведение..., работа с ...")
+    if (items.length === 1 && (items[0].match(/,/g) || []).length >= 2 && !/[.;]\s/.test(items[0]) && items[0].split(/,\s+/).every(x => x.length < 90)) {
+      const parts = items[0].split(/,\s+(?=[а-яё])/i).map(trimPunct).filter(Boolean);
+      const seen = new Set(); items.splice(0, 1, ...parts.filter(p => { const key = p.toLowerCase(); if (seen.has(key)) return false; seen.add(key); return true; }));
+    }
+    const norm = s => cap(trimPunct(fixText(s)));
+    job.duties = items.map(norm).filter(s => s.length > 1);
+    job.extras = extras.map(x => ({ label: fixText(x.label), items: x.items.map(norm).filter(Boolean) })).filter(x => x.items.length);
+    if (projects.length === 1 && job.company && !/[“"«]/.test(job.company)) job.company = `${job.company} “${projects[0]}”`;
+    else if (projects.length) desc.unshift("Проекты: " + projects.join("; "));
+    job.description = trimPunct(fixText(desc.join(" "))).replace(/\s+/g, " ");
+    if (job.description) job.description = cap(job.description) + (/[.!?]$/.test(job.description) ? "" : ".");
+    let techStr = tech.map(t => fixText(t)).join(", ").replace(/\s*[;]\s*/g, ", ").replace(/,\s*,/g, ",").replace(/^[,\s]+|[,\s.]+$/g, "");
+    { const seenT = new Set(); techStr = techStr.split(/,\s*/).map(x => x.trim()).filter(x => { const key = x.toLowerCase(); if (!x || seenT.has(key)) return false; seenT.add(key); return true; }).join(", "); }
+    if (!techStr) { const found = toolsIn([job.description, ...job.duties, ...job.extras.flatMap(x => x.items)].join("\n")); techStr = found.join(", "); }
+    job.tech = techStr;
+    job.company = fixText(job.company).replace(STOP_COMPANY, "").replace(/^["«„]|["»“]$/g, "").replace(/^"(.+)"$/, "$1").replace(/^«(.+)»$/, "$1").trim();
+    job.company = job.company.replace(/^(.+?)\s+"(.+)"$/, "$1 “$2”");
+    job.role = trimPunct(fixText(job.role));
+    job.fields = job.fields.map(f => ({ label: f.label, value: fixText(f.value) }));
+  }
+  function toolsIn(text) {
+    const out = [];
+    for (const [, name, re] of TOOLS) if (re.test(text) && !out.includes(name)) out.push(name);
+    if (out.includes("PostgreSQL") || out.includes("MySQL") || out.includes("MS SQL")) { const i = out.indexOf("SQL"); if (i >= 0 && !/\bsql\b(?!\s*server)/i.test(text.replace(/postgre\s?sql|my\s?sql|ms\s?sql/gi, ""))) out.splice(i, 1); }
+    if (out.includes("GitLab") || out.includes("GitHub")) { const i = out.indexOf("Git"); if (i >= 0 && !/\bgit\b/i.test(text.replace(/git\s?(lab|hub)/gi, ""))) out.splice(i, 1); }
+    return out;
+  }
+
+  // ---------- education, courses, languages ----------
+  const LEVEL_RE = /^(неоконченное( высшее)?|высшее( образование)?( \(?(бакалавриат|магистратура|специалитет)\)?)?|высшее образование бакалавриат|неоконченное высшее|среднее специальное|среднее профессиональное( образование)?|среднее( образование)?|бакалавр|магистр|специалист|кандидат наук|аспирантура|бакалавриат|магистратура|mba)$/i;
+  const levelNorm = s => cap(clean(s).replace(/\s*образование\s*/i, " ").replace(/\s+/g, " ").trim()).replace(/^Высшее (бакалавриат|магистратура|специалитет)$/i, "Высшее ($1)");
+  function parseEducation(ls) {
+    ls = ls.filter(l => !TEMPLATE_LABELS.test(l) && !/^(период|название учебного заведения|специальность|присвоенная степень( \/ звание)?|уровень|факультет|образование|повышение квалификации|курс \/ сертификат)$/i.test(l));
+    if (!ls.length) return [];
+    let defLevel = "";
+    const out = []; let cur = null;
+    const yearRe = /^(?:\d{1,2}[./])?(\d{4})(?:\s*[—–-]\s*(?:\d{1,2}[./])?(\d{4}|н\.?\s*в\.?|наст.*))?\s*(?:г\.?)?$/i;
+    for (let l of ls) {
+      l = l.replace(RE_BULLET, "").trim();
+      const y = l.match(yearRe);
+      if (y) { cur = { period: y[2] && /^\d{4}$/.test(y[2]) ? y[2] : y[1], institution: "", faculty: "", level: "" }; out.push(cur); continue; }
+      const lv = l.match(/^(высшее|бакалавр|магистр|среднее специальное|среднее профессиональное|неоконченное высшее)(?![а-яёa-z0-9_])\s*(.*)$/i);
+      if (LEVEL_RE.test(l)) { if (cur) cur.level = cur.level || levelNorm(l); else defLevel = levelNorm(l); continue; }
+      if (!cur) { cur = { period: "", institution: "", faculty: "", level: "" }; out.push(cur); }
+      if (lv && lv[2] && lv[2].length > 8 && !cur.institution) { cur.level = cur.level || levelNorm(lv[1]); l = lv[2]; }
+      const inl = l.match(/^(.*?),?\s*(\d{4})\s*(г\.?)?$/);
+      if (inl && !cur.period) { cur.period = inl[2]; l = inl[1]; }
+      if (cur.institution && (/(имени|им\.|и|технологический|государственный|национальный|исследовательский)$/i.test(cur.institution) || /^[а-яё]/.test(l)) && !cur.faculty) { cur.institution += " " + l; continue; }
+      if (cur.faculty && /^[а-яё(]/.test(l)) { cur.faculty += " " + l; continue; }
+      if (!cur.institution) cur.institution = l; else if (!cur.faculty) cur.faculty = l; else if (LEVEL_RE.test(l)) cur.level = levelNorm(l); else cur.faculty += ", " + l;
+    }
+    return out.filter(e => e.institution).map(e => ({ period: e.period, institution: fixText(e.institution), faculty: fixText(e.faculty).replace(/-\s+/g, "-"), level: e.level || defLevel }));
+  }
+  function parseCourses(ls) {
+    ls = ls.filter(l => !TEMPLATE_LABELS.test(l) && !/^(период|курс \/ сертификат|повышение квалификации)$/i.test(l));
+    const out = []; let cur = null;
+    for (let l of ls) {
+      l = unbullet(l);
+      const y = l.match(/^((?:Q[1-4]\s*)?\d{4})$/i);
+      if (y) { cur = { period: y[1].toUpperCase(), parts: [] }; out.push(cur); continue; }
+      if (cur && cur.parts.length < 2 && /^(Q[1-4]\s*)?\d{4}$/.test(cur.period) && out[out.length - 1] === cur) { cur.parts.push(l); continue; }
+      const iy = l.match(/^(.*?)[,(\s–-]+(\d{4})\s*(г\.?)?\)?\.?$/);
+      cur = null; out.push(iy ? { period: iy[2], parts: [iy[1]] } : { period: "", parts: [l] });
+    }
+    return out.map(c => { let [name, org] = c.parts; name = trimPunct(fixText(name || "")); org = trimPunct(fixText(org || "")); const n = name.replace(/["«»“”]/g, "").toLowerCase(); return { period: c.period, name: org && !n.includes(org.replace(/["«»“”]/g, "").toLowerCase()) ? `${name}, ${org}` : name }; }).filter(c => c.name);
+  }
+  function parseLanguages(ls) {
+    const out = [];
+    for (let l of ls) {
+      l = clean(l.replace(/^знание языков\s*/i, ""));
+      const m = l.match(/^(русский|английский|немецкий|французский|испанский|итальянский|китайский|японский|турецкий|татарский|казахский|украинский)(?:\s+язык)?\s*[—–:-]?\s*(.*)$/i);
+      if (!m) continue;
+      let lvl = m[2].replace(/\s*[—–-]\s*/g, " — ").trim();
+      const cefr = lvl.match(/\b([ABC][12])(?![а-яёa-z0-9_])/i); const word = lvl.replace(/\b[ABC][12]\b/i, "").replace(/[—–-]/g, "").trim().toLowerCase();
+      lvl = cefr ? `${cefr[1].toUpperCase()}${word ? " (" + word + ")" : ""}` : word || lvl.toLowerCase();
+      if (!out.some(o => o.startsWith(m[1].toLowerCase()))) out.push(`${m[1].toLowerCase()}${lvl ? " — " + lvl : ""}`);
+    }
+    return out.join(", ");
+  }
+
+  // ---------- skills ----------
+  function parseTemplateSkills(lines) {
+    const a = lines.findIndex(l => /^тестирование$/i.test(l)), b = lines.findIndex(l => /^ключевые технологии$/i.test(l));
+    if (a < 0 || b < 0 || Math.abs(a - b) > 2) return null;
+    const out = { testing: [], tech: [] };
+    for (let i = Math.max(a, b) + 1; i < lines.length; i++) {
+      const l = lines[i]; if (sectionOf(l) || /^сведения о трудовой/i.test(l)) break;
+      const m = l.match(/^([^:]{3,120}?):\s*(.*)$/);
+      if (m && (out.tech.length || /\(|система|тестирование api|работа с|брокер|логи|язык|инструмент|мониторинг|ci|контрол/i.test(m[1]))) out.tech.push({ label: fixText(m[1]) + ":", value: trimPunct(fixText(m[2])) });
+      else out.testing.push(cap(trimPunct(fixText(l))));
+    }
+    return out.testing.length || out.tech.length ? out : null;
+  }
+  function buildTechSkills(text, skillLines) {
+    // explicit "Категория: инструменты" lines (LANIT CVs, custom CVs)
+    const joined = []; for (const l0 of skillLines) { const l = unbullet(l0); const prev = joined[joined.length - 1]; if (prev !== undefined && (/[:：]$/.test(prev) && !l.includes(":") || /^[а-яё(]/.test(l))) joined[joined.length - 1] = prev + " " + l; else joined.push(l); }
+    const explicit = joined.filter(l => /^[^:]{3,100}:\s*\S/.test(l) && (l.slice(0, l.indexOf(":")).split(/\s+/).length <= 5 || /[,(]/.test(l.slice(0, l.indexOf(":"))) && l.slice(0, l.indexOf(":")).split(/\s+/).length <= 12) && !/(понима|умею|знаю|интерес|ищу|готов|хочу|имею|опыт работы)/i.test(l.slice(0, l.indexOf(":"))) && !/^(знание языков|навыки)(?![а-яёa-z0-9_])/i.test(l))
+      .map(l => { const i = l.indexOf(":"); return { label: fixText(l.slice(0, i)) + ":", value: trimPunct(fixText(l.slice(i + 1))) }; });
+    if (explicit.length >= 3) return explicit.filter(g => !/^язык(и)?:$/i.test(g.label) || true);
+    const found = toolsIn(text);
+    const groups = [];
+    for (const cat of CAT_ORDER) {
+      const names = TOOLS.filter(t => t[0] === cat && found.includes(t[1])).map(t => t[1]);
+      if (!names.length) continue;
+      if (cat === "api" && !names.some(n => !["JSON", "XML", "REST API", "SOAP", "WebSocket"].includes(n)) && names.length < 2) continue;
+      groups.push({ label: CAT_LABEL[cat] + ":", value: names.join(", ") });
+    }
+    return groups;
+  }
+  function buildTestingSkills(text, aboutLines, skillLines, jobs) {
+    const t = text.toLowerCase();
+    const out = [];
+    const add = s => { if (s && !out.includes(s)) out.push(s); };
+    const TYPES = [["функциональн", "функциональное"], ["регресс", "регрессионное"], ["интеграционн", "интеграционное"], ["smoke|смок|смоук", "smoke"], ["sanity|санити", "sanity"], ["e2e|end-to-end|сквозн", "E2E"], ["кроссбраузерн|кросс-браузерн", "кроссбраузерное"], ["кроссплатформ", "кроссплатформенное"], ["ui[/ ]?ux|пользовательского интерфейса|ui-тестир|тестирование ui", "UI/UX"], ["нагрузочн", "нагрузочное"], ["приёмочн|приемочн|uat|пси", "приёмочное"], ["исследовательск", "исследовательское"], ["системн(ое|ого) тестир", "системное"]];
+    const types = TYPES.filter(([re]) => new RegExp(re).test(t)).map(([, n]) => n);
+    if (types.length >= 2) add(cap(types.join(", ")) + " тестирование");
+    if (/ручн/.test(t) && /(веб|web|сайт)/.test(t)) add("Ручное тестирование веб-приложений" + (/мобильн/.test(t) ? " и мобильных приложений" : ""));
+    else if (/мобильн/.test(t)) add("Тестирование мобильных приложений" + (/ios/.test(t) && /android/.test(t) ? " iOS и Android" : ""));
+    if (/back-?end|бэкенд|бекенд/.test(t) && /front-?end|фронтенд/.test(t)) add("Тестирование frontend и backend");
+    if (/микросервис/.test(t)) add("Тестирование микросервисной архитектуры");
+    if (/требован/.test(t)) add("Анализ требований и проектной документации");
+    const docs = [["тест-кейс|тест кейс|тесткейс", "тест-кейсы"], ["чек-лист|чек лист|чеклист", "чек-листы"], ["тест-план|тестовый план|тест план", "тест-планы"], ["тестовых сценари|тестовые сценари", "тестовые сценарии"], ["матриц", "матрица покрытия"], ["отчёт|отчет", "отчёты о тестировании"]].filter(([re]) => new RegExp(re).test(t)).map(([, n]) => n);
+    if (docs.length) add("Разработка и актуализация тестовой документации: " + docs.join(", "));
+    if (/тест-дизайн|тест дизайн|техник[иа] тест/.test(t)) add("Применение техник тест-дизайна");
+    if (/баг|дефект/.test(t)) add("Поиск, локализация и оформление дефектов" + (/jira|джир/.test(t) ? " (Jira)" : ""));
+    if (/тестов(ые|ых) данн/.test(t)) add("Подготовка тестовых данных");
+    if (/\bapi\b/.test(t)) add("Тестирование API" + (/\brest\b/.test(t) ? " (REST" + (/\bsoap\b/.test(t) ? ", SOAP" : "") + ")" : ""));
+    if (/\bsql\b|postgre|бд(?![а-яё])|баз(ы|ами|ой) данных/.test(t)) add("Проверка данных в БД с помощью SQL-запросов");
+    if (/лог(и|ов|ами)(?![а-яёa-z0-9_])|логирован|kibana|grafana/.test(t)) add("Анализ логов для локализации дефектов");
+    if (/kafka|кафк|rabbit|брокер/.test(t)) add("Проверка взаимодействия сервисов через брокеры сообщений");
+    if (/макет|figma|фигм/.test(t)) add("Проверка UI на соответствие макетам");
+    if (/автотест|автоматизац|selenium|pytest|playwright/.test(t)) add("Разработка и поддержка автотестов");
+    if (/нагрузочн|jmeter|\bk6\b|loadrunner|производительност/.test(t)) add("Нагрузочное тестирование и анализ результатов");
+    if (/демо|пси(?![а-яё])|приемо-сдаточн|приёмо-сдаточн/.test(t)) add("Проведение демо и приёмо-сдаточных испытаний");
+    const agile = ["agile", "scrum", "kanban"].filter(w => t.includes(w)).map(cap); if (agile.length) add("Работа по " + agile.join(", ").replace(/^Agile, /, "Agile (") + (agile.length > 1 && agile[0] === "Agile" ? ")" : ""));
+    if (/ментор|наставни|стаж[её]р|онбординг|адаптац/.test(t)) add("Менторство и адаптация новых сотрудников");
+    return out.slice(0, 10);
+  }
+
+  // ---------- vacancy ----------
+  function tailor(data, vacancy) {
+    const v = String(vacancy || "").toLowerCase(); if (!v.trim()) return data;
+    const vTools = TOOLS.filter(([, , re]) => re.test(v)).map(t => t[1]);
+    const stop = new Set("требования обязанности условия опыт работы знание умение понимание навыки будет плюсом плюсом работа работы задачи компании команды команда проекта проект года более менее также которые наших наши ваши этого очень".split(" "));
+    const words = [...new Set((v.match(/[a-zа-яё][a-zа-яё+#-]{3,}/g) || []).filter(w => !stop.has(w)).map(w => w.slice(0, Math.max(4, Math.min(7, w.length - 2)))))];
+    const score = s => { const l = String(s).toLowerCase(); let n = 0; for (const tl of vTools) if (TOOLS.find(t => t[1] === tl)[2].test(l)) n += 3; for (const w of words) if (l.includes(w)) n += 1; return n; };
+    const sortBy = (arr, f) => arr.map((x, i) => ({ x, i, s: f(x) })).sort((a, b) => b.s - a.s || a.i - b.i).map(o => o.x);
+    data.skills_testing = sortBy(data.skills_testing, score);
+    const langs = data.skills_tech.filter(g => /^язык/i.test(g.label)), rest = data.skills_tech.filter(g => !/^язык/i.test(g.label));
+    data.skills_tech = [...sortBy(rest, g => score(g.label + " " + g.value)), ...langs];
+    for (const j of data.jobs) j.duties = sortBy(j.duties, score);
+    const resumeText = JSON.stringify(data).toLowerCase();
+    const missing = vTools.filter(name => !TOOLS.find(t => t[1] === name)[2].test(resumeText));
+    data.notes = data.notes.filter(n => !/^(В вакансии|Совпадения с вакансией)/.test(n));
+    if (missing.length) data.notes.push(`В вакансии упоминаются ${missing.join(", ")}: в резюме их нет, в документ они не добавлены.`);
+    const matched = vTools.filter(n => !missing.includes(n));
+    if (matched.length) data.notes.push(`В вакансии и резюме совпадают: ${matched.join(", ")}. Совпадающие навыки и обязанности подняты наверх.`);
+    else data.notes.push("Совпадения с вакансией подняты наверх списков, текст не менялся.");
+    return data;
+  }
+
+  return { parse, tailor, toolsIn };
+})();
+if (typeof module !== "undefined") module.exports = ResumeParser;
+
+</script>
 <script>
 (() => {
 "use strict";
@@ -293,48 +882,9 @@ const MED = "Montserrat Medium", REG = "Montserrat";
 const $ = s => document.querySelector(s);
 
 /* ---------- runtime capabilities ---------- */
-/* ---------- Claude API (key of the person using the page) ---------- */
-const API = { key: "", model: "claude-sonnet-5-5", remember: false };
-try { const saved = JSON.parse(localStorage.getItem("rc_api") || "null"); if (saved) Object.assign(API, saved); } catch {}
-function saveApi() { try { if (API.remember) localStorage.setItem("rc_api", JSON.stringify(API)); else localStorage.setItem("rc_api", JSON.stringify({ model: API.model, remember: false })); } catch {} }
-async function callClaude(prompt, { signal, onText } = {}) {
-  let res;
-  try {
-    res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST", signal,
-      headers: { "content-type": "application/json", "x-api-key": API.key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
-      body: JSON.stringify({ model: API.model, max_tokens: 32000, stream: true, messages: [{ role: "user", content: prompt }] })
-    });
-  } catch (e) { if (e?.name === "AbortError") throw { code: "cancelled" }; throw { code: "network", message: e?.message }; }
-  if (!res.ok) {
-    let msg = ""; try { msg = (await res.json())?.error?.message || ""; } catch {}
-    const code = res.status === 401 ? "bad_key" : res.status === 403 ? "forbidden" : res.status === 429 ? "rate_limited" : (res.status === 529 || res.status === 503) ? "overloaded" : /credit|balance|billing/i.test(msg) ? "no_credit" : "api_error";
-    throw { code, message: res.status + (msg ? " " + msg : "") };
-  }
-  const reader = res.body.getReader(), dec = new TextDecoder(); let buf = "", text = "", stop = null;
-  try {
-    for (;;) {
-      const { done, value } = await reader.read(); if (done) break;
-      buf += dec.decode(value, { stream: true }).replace(/\r/g, "");
-      let i;
-      while ((i = buf.indexOf("\n\n")) >= 0) {
-        const evt = buf.slice(0, i); buf = buf.slice(i + 2);
-        const data = evt.split("\n").filter(l => l.startsWith("data:")).map(l => l.slice(5).trim()).join("");
-        if (!data) continue; let j; try { j = JSON.parse(data); } catch { continue; }
-        if (j.type === "content_block_delta" && j.delta?.type === "text_delta") { text += j.delta.text; onText && onText({ text, delta: j.delta.text }); }
-        else if (j.type === "message_delta") stop = j.delta?.stop_reason || stop;
-        else if (j.type === "error") throw { code: j.error?.type === "overloaded_error" ? "overloaded" : "api_error", message: j.error?.message };
-      }
-    }
-  } catch (e) { if (e?.name === "AbortError") throw { code: "cancelled" }; throw e; }
-  if (stop === "max_tokens") throw { code: "too_long" };
-  if (!text.trim()) throw { code: "empty_completion" };
-  const t = text.replace(/^\s*```(?:json)?\s*/i, "").replace(/```\s*$/, ""); const a = t.indexOf("{"), b = t.lastIndexOf("}");
-  try { return JSON.parse(t.slice(a, b + 1)); } catch { throw { code: "invalid_json" }; }
-}
-const sampleFn = { json: callClaude };
+/* ---------- downloads: an ordinary browser download ---------- */
 const downloads = { save: async ({ filename, data }) => { const url = URL.createObjectURL(data); const a = document.createElement("a"); a.href = url; a.download = filename; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 60000); } };
-const capsResolved = true;
+
 
 /* ---------- template ---------- */
 let tplPromise = null;
@@ -1073,55 +1623,6 @@ async function buildPdf(data, o) {
   return doc.build(catalogId, info);
 }
 
-/* ---------- prompt ---------- */
-function buildPrompt(text, vacancy, nameHint) {
-  const example = { name_full: "Иванов Иван Иванович", name_short: "Иван И.", title: "Инженер по тестированию ПО (Middle QA Engineer)", experience_line: "3+ года опыта в области тестирования ПО", phone: "+7 (900) 1234567", email: "ivanov@mail.ru",
-    skills_testing: ["Функциональное, регрессионное и интеграционное тестирование", "Разработка и актуализация тест-кейсов и чек-листов"],
-    skills_tech: [{ label: "Тестирование API (Postman, Swagger, DevTools):", value: "тестирование REST API, проверка ответов сервисов" }, { label: "Языки:", value: "русский — родной, английский — B1 (средний)" }],
-    jobs: [{ period: "05.2023 – по наст. время", company: "ЛАНИТ “ЗакупAI (Сбербанк)”", role: "Тестировщик ПО", fields: [{ label: "Архитектура:", value: "микросервисы" }], description: "Внутренний проект банка для автоматизации закупок.", extras: [{ label: "Достижения:", items: ["Написал 100+ тест-кейсов"] }], duties: ["Проведение регрессионного тестирования"], tech: "Jira, Confluence, Postman, DBeaver (PostgreSQL)" }],
-    education: [{ period: "2017", institution: "Московский политехнический университет, Москва", faculty: "Машиностроение, Конструкторско-технологическое обеспечение", level: "Высшее" }],
-    courses: [{ period: "2021", name: "Графический дизайн, WorldSkills Russia" }],
-    notes: ["Не перенесены дата рождения, город и желаемая зарплата"] };
-  let p = `Ты тест-менеджер в крупной IT-компании. Перенеси резюме кандидата в структуру корпоративного шаблона резюме и верни её как JSON.
-
-Правила:
-1. Используй только факты из исходного резюме. Не придумывай опыт, проекты, технологии, цифры и даты.
-2. Из личных данных переноси только ФИО, телефон и email. Не переноси дату рождения, возраст, город, гражданство, зарплату, мессенджеры, соцсети, автомобиль, хобби.
-3. Периоды пиши как «ММ.ГГГГ – ММ.ГГГГ», текущее место как «ММ.ГГГГ – по наст. время».
-4. jobs — все места работы из резюме, от новых к старым. company — название без ООО/АО; если указан проект или заказчик, добавь его в кавычках “…”, например ЛАНИТ “ЗакупAI (Сбербанк)”.
-5. role — должность. fields — короткие пары только из резюме: «Архитектура:», «Разновидность ПО:», «Команда:», «Сфера:», «Соотношение Backend/Frontend:». description — краткое описание проекта, если оно есть. extras — группы вроде «Достижения:» со списком пунктов.
-6. duties — обязанности списком, близко к тексту резюме, без точек с запятой в конце. Исправь опечатки в названиях инструментов (Temportal → Temporal, Insomina → Insomnia, Kubernets → Kubernetes, PyTTY → PuTTY).
-7. tech — инструменты этого места через запятую; пустая строка, если их нет.
-8. skills_testing — 7–10 пунктов блока «Тестирование»: виды тестирования, документация, работа с дефектами, процессы. Собирай из «О себе», навыков и обязанностей.
-9. skills_tech — 5–9 групп блока «Ключевые технологии»: label — категория с инструментами в скобках и двоеточием в конце, value — что кандидат с ними делал (может быть пустым). Последняя группа — «Языки:», если языки указаны.
-10. title — должность для шапки. experience_line — «N+ года опыта в области тестирования ПО», где N — полные годы работы в тестировании по датам; согласуй слово: «1+ год», «2+ года», «5+ лет». Если до тестирования был другой ИТ-опыт, можно «5+ лет опыта в ИТ, 3+ года в тестировании ПО».
-11. name_full — «Фамилия Имя Отчество» как в резюме; name_short — «Имя Ф.».
-12. education — {period: год окончания, institution: «Название, Город», faculty: «Факультет, Специальность», level: уровень как в резюме}. courses — {period, name: «Курс, Организация»}; period пустой, если года нет.
-13. notes — 2–6 коротких пунктов для проверяющего: что не перенесено, что неоднозначно, что исправлено.
-`;
-  if (nameHint) p += `\nПользователь уточнил ФИО кандидата: «${nameHint}». Используй его в name_full и name_short.\n`;
-  if (vacancy) p += `
-Требования вакансии:
-"""
-${vacancy.slice(0, 12000)}
-"""
-Сделай резюме более выигрышным для этой вакансии, не нарушая правило 1:
-- title сформулируй ближе к названию вакансии, если опыт кандидата это подтверждает;
-- в skills_testing и skills_tech поставь первыми пункты, совпадающие с требованиями, и используй термины вакансии для того, что у кандидата действительно есть;
-- в duties каждого места подними наверх релевантные обязанности и переформулируй их терминами вакансии; второстепенное можно сократить, но не удаляй места работы;
-- не добавляй навыки и технологии, которых нет в резюме; если важного требования в резюме нет, напиши об этом в notes.
-`;
-  p += `
-Ответь только JSON-объектом такой структуры (значения ниже — пример формата, не данные):
-${JSON.stringify(example)}
-
-Исходное резюме:
-"""
-${text.slice(0, 60000)}
-"""`;
-  return p;
-}
-
 /* ---------- photo crop ---------- */
 const cv = $("#photoCv"), cx2 = cv.getContext("2d");
 function drawCrop(ctx, Wd, Hd, ph) {
@@ -1165,7 +1666,7 @@ drop.addEventListener("drop", e => { const f = e.dataTransfer?.files?.[0]; if (f
 $("#file").addEventListener("change", e => { const f = e.target.files[0]; if (f) onFile(f); });
 function fileStat(msg, err) { const el = $("#filestat"); el.hidden = false; el.textContent = msg; el.classList.toggle("err", !!err); }
 async function onFile(f) {
-  state.file = f; state.text = ""; state.data = null; state.parsedKey = ""; setPhoto(null); showView("idle");
+  state.file = f; state.text = ""; state.data = null; setPhoto(null); showView("idle"); renderEditor();
   $("#dropTitle").textContent = f.name;
   const ext = (f.name.split(".").pop() || "").toLowerCase();
 
@@ -1175,128 +1676,163 @@ async function onFile(f) {
     const buf = await f.arrayBuffer();
     const res = ext === "pdf" ? await readPdf(buf) : ext === "docx" ? await readDocx(buf) : await readLegacy(buf);
     if (state.file !== f) return;
-    state.text = res.text;
+    state.text = res.text; state.src = ext === "pdf" ? "pdf" : "doc";
     if (res.photo) setPhoto(res.photo, "auto"); else drawPhoto();
-    if (state.text.length < 200) fileStat(`Текста почти нет (${state.text.length} символов). Возможно, это скан: такой файл Claude не прочитает.`, true);
+    if (state.text.length < 200) fileStat(`Текста почти нет (${state.text.length} символов). Возможно, это скан: его нельзя разобрать автоматически.`, true);
     else fileStat(`${(f.size / 1024).toFixed(0)} КБ · извлечено ${state.text.length.toLocaleString("ru-RU")} символов${res.photo ? " · найдено фото" : ""}`);
   } catch (e) { state.text = ""; fileStat(e?.user || ("Не удалось прочитать файл: " + (e?.message || e) + ". Попробуйте сохранить его как .docx или PDF."), true); }
+  if (state.text.length >= 200) runParse(); else { state.data = null; renderEditor(); }
   refresh();
 }
 
 /* ---------- UI flow ---------- */
 const isFull = () => $("#hdrFull").checked;
 document.querySelectorAll('input[name="hdr"]').forEach(r => r.addEventListener("change", () => { $("#hdrFullBox").hidden = !isFull(); }));
-$("#vacancy").addEventListener("input", refresh);
-$("#ovName").addEventListener("input", refresh);
-function keyNow() { return state.text + "\u0001" + $("#vacancy").value.trim() + "\u0001" + $("#ovName").value.trim(); }
+$("#ovName").addEventListener("input", () => { if (state.data) renderSummary(); });
+$("#vacancy").addEventListener("input", () => { $("#applyVac").disabled = !state.data; $("#vacNote").textContent = ""; });
 function refresh() {
-  const noClaude = !API.key;
-  $("#noClaude").hidden = !noClaude;
-  const ready = !!state.text && state.text.length >= 200 && !state.busy;
-  const needParse = !state.data || state.parsedKey !== keyNow();
-  for (const [id, ext] of [["#go", ".DOCX"], ["#goPdf", ".PDF"]]) {
-    $(id).disabled = !ready || (needParse && !API.key);
-    $(id).textContent = state.data && !needParse ? "Скачать " + ext + " ещё раз" : (state.data ? "Разобрать заново и скачать " + ext : "Сформировать " + ext);
-  }
+  $("#noClaude").hidden = !!state.data;
+  for (const id of ["#go", "#goPdf"]) $(id).disabled = !state.data || state.busy;
+  $("#applyVac").disabled = !state.data;
 }
 function showView(v) { for (const k of ["idle", "work", "done", "err"]) $("#view" + k[0].toUpperCase() + k.slice(1)).hidden = k !== v; }
-function step(n, st) { const el = $("#st" + n); el.classList.remove("active", "done"); if (st) el.classList.add(st); }
-const ERR = {
-  not_granted: "Разбор не разрешён: разрешите странице обращаться к Claude и нажмите кнопку снова.",
-  sampling_disabled: "Claude недоступен для этой учётной записи или организации.",
-  rate_limited: "Превышен лимит запросов API. Подождите немного и попробуйте снова.",
-  session_expired: "Сессия claude.ai истекла: войдите заново и повторите.",
-  refused: "Claude отказался обработать этот текст. Проверьте, что файл — резюме.",
-  invalid_json: "Ответ Claude не удалось разобрать. Нажмите кнопку ещё раз.",
-  prompt_too_large: "Резюме слишком длинное для одного запроса.",
-  empty_completion: "Claude вернул пустой ответ. Попробуйте ещё раз.",
-  bad_key: "Ключ API не подошёл. Проверьте его в блоке «Подключение к Claude».",
-  forbidden: "Доступ запрещён: у ключа нет прав на эту модель или API недоступен в вашем регионе.",
-  overloaded: "Сервис Claude сейчас перегружен. Попробуйте через минуту.",
-  no_credit: "На счёте API закончились средства. Пополните баланс в Claude Console.",
-  network: "Не удалось связаться с API Anthropic. Проверьте интернет, VPN, прокси или корпоративный файрвол.",
-  too_long: "Ответ не поместился в лимит. Попробуйте ещё раз или выберите другую модель.",
-};
+function step(n, st) { const el = $("#st" + n); if (!el) return; el.classList.remove("active", "done"); if (st) el.classList.add(st); }
 function showError(msg) { $("#errText").textContent = msg; showView("err"); }
-
-$("#form").addEventListener("submit", async e => {
-  e.preventDefault(); if (state.busy) return;
-  const kind = e.submitter && e.submitter.id === "goPdf" ? "pdf" : "docx";
-  if (state.data && state.parsedKey === keyNow()) { await saveFile(kind); return; }
-  if (!API.key) return;
-  state.busy = true; refresh(); showView("work"); step(1, "done"); step(2, "active"); step(3, null); $("#st2x").textContent = "";
-  $("#stop").hidden = false; const ctl = new AbortController(); state.ctl = ctl;
+function runParse() {
   try {
-    const raw = await sampleFn.json(buildPrompt(state.text, $("#vacancy").value.trim(), $("#ovName").value.trim()), {
-      signal: ctl.signal, cache: false,
-      onText: ({ text }) => { $("#st2x").textContent = ` · получено ${text.length.toLocaleString("ru-RU")} символов`; }
-    });
-    const data = normalize(raw);
-    if (!data.jobs.length && !data.skills_testing.length) throw { code: "invalid_json" };
-    state.data = data; state.parsedKey = keyNow(); state.saved = false;
-    step(2, "done"); step(3, "active");
-    renderDone(); await saveFile(kind);
-  } catch (err) {
-    if (err?.code === "cancelled") { showView(state.data ? "done" : "idle"); }
-    else showError(ERR[err?.code] ? ERR[err.code] + (err.code === "api_error" || err.code === "forbidden" ? " (" + (err.message || "") + ")" : "") : ("Ошибка API: " + (err?.message || err?.code || err) + ". Попробуйте ещё раз."));
-  } finally { state.busy = false; state.ctl = null; $("#stop").hidden = true; refresh(); }
+    state.data = ResumeParser.parse(state.text, { src: state.src });
+    const v = $("#vacancy").value.trim();
+    if (v) { ResumeParser.tailor(state.data, v); $("#vacNote").textContent = "Учтена вакансия"; }
+    renderDone(); renderEditor();
+  } catch (e) { state.data = null; renderEditor(); showError("Не удалось разобрать резюме: " + (e?.message || e) + ". Заполните поля вручную или попробуйте другой файл."); }
+  refresh();
+}
+$("#applyVac").addEventListener("click", () => {
+  if (!state.data) return;
+  const v = $("#vacancy").value.trim();
+  if (v) ResumeParser.tailor(state.data, v); else state.data.notes = state.data.notes.filter(n => !/^(В вакансии|Совпадения с вакансией)/.test(n));
+  $("#vacNote").textContent = v ? "Списки переставлены под вакансию" : "Заметки о вакансии убраны";
+  renderDone(); renderEditor();
 });
-$("#stop").addEventListener("click", () => state.ctl?.abort());
-
-function renderDone() {
-  const d = state.data;
+$("#form").addEventListener("submit", async e => {
+  e.preventDefault(); if (state.busy || !state.data) return;
+  const kind = e.submitter && e.submitter.id === "goPdf" ? "pdf" : "docx";
+  await saveFile(kind);
+});
+const pl = (n, a, b, c) => { const m10 = n % 10, m100 = n % 100; return n + " " + (m10 === 1 && m100 !== 11 ? a : m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14) ? b : c); };
+function renderSummary() {
+  const d = state.data; if (!d) return;
   $("#rName").textContent = ($("#ovName").value.trim() || d.name_full || "Кандидат");
   $("#rTitle").textContent = [d.title, d.experience_line].filter(Boolean).join(" · ");
   const chips = $("#rChips"); chips.replaceChildren();
-  const add = (t, cls) => { const s = document.createElement("span"); s.className = "chip" + (cls ? " " + cls : ""); s.textContent = t; chips.append(s); };
-  const plural = (n, a, b, c) => { const m10 = n % 10, m100 = n % 100; return n + " " + (m10 === 1 && m100 !== 11 ? a : m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14) ? b : c); };
-  add(plural(d.jobs.length, "место работы", "места работы", "мест работы"));
-  add(plural(d.education.length, "учебное заведение", "учебных заведения", "учебных заведений"));
-  if (d.courses.length) add(plural(d.courses.length, "курс", "курса", "курсов"));
-  if ($("#vacancy").value.trim()) add("под вакансию", "ok");
+  const add = (t, cls) => { const sp = document.createElement("span"); sp.className = "chip" + (cls ? " " + cls : ""); sp.textContent = t; chips.append(sp); };
+  add(pl(d.jobs.length, "место работы", "места работы", "мест работы"));
+  add(pl(d.education.length, "учебное заведение", "учебных заведения", "учебных заведений"));
+  if (d.courses.length) add(pl(d.courses.length, "курс", "курса", "курсов"));
+  if (d.notes.some(n => /^(В вакансии|Совпадения с вакансией)/.test(n))) add("под вакансию", "ok");
+}
+function renderDone() {
+  const d = state.data; renderSummary();
   const ul = $("#rNotes"); ul.replaceChildren();
   for (const n of d.notes) { const li = document.createElement("li"); li.textContent = n; ul.append(li); }
   $("#notesBox").hidden = !d.notes.length;
   $("#dlNote").textContent = "";
   showView("done");
 }
+
+/* ---------- editor ---------- */
+const linesOf = t => String(t).split("\n").map(x => x.trim()).filter(Boolean);
+const autosize = ta => { ta.rows = Math.min(18, Math.max(+ta.dataset.min || 3, ta.value.split("\n").length + 1)); };
+function field(label, value, opts) {
+  const wrap = document.createElement("label"); wrap.className = "field";
+  const sp = document.createElement("span"); sp.textContent = label; wrap.append(sp);
+  const el = document.createElement(opts.area ? "textarea" : "input");
+  if (opts.area) el.dataset.min = opts.min || 3; else el.type = "text";
+  el.value = value || ""; if (opts.ph) el.placeholder = opts.ph; el.spellcheck = true;
+  el.addEventListener("input", () => { opts.on(el.value); if (opts.area) autosize(el); });
+  wrap.append(el); if (opts.area) autosize(el);
+  if (opts.hint) { const h = document.createElement("small"); h.textContent = opts.hint; wrap.append(h); }
+  return wrap;
+}
+const fieldsToText = fs => fs.map(f => `${f.label} ${f.value}`.trim()).join("\n");
+const textToFields = t => linesOf(t).map(l => { const i = l.indexOf(":"); return i > 0 ? { label: l.slice(0, i + 1).trim(), value: l.slice(i + 1).trim() } : { label: l, value: "" }; });
+const extrasToText = xs => xs.map(x => [x.label, ...x.items.map(it => "– " + it)].join("\n")).join("\n");
+function textToExtras(t) { const out = []; let cur = null; for (const l of linesOf(t)) { if (/[:：]$/.test(l) && l.length < 90) { cur = { label: l, items: [] }; out.push(cur); continue; } if (!cur) { cur = { label: "Достижения:", items: [] }; out.push(cur); } cur.items.push(l.replace(/^[-–—•*]\s*/, "")); } return out.filter(x => x.items.length); }
+const eduToText = es => es.map(e => [e.period, e.institution, e.faculty, e.level].join(" | ")).join("\n");
+const textToEdu = t => linesOf(t).map(l => { const p = l.split("|").map(x => x.trim()); return p.length === 1 ? { period: "", institution: p[0], faculty: "", level: "" } : { period: p[0] || "", institution: p[1] || "", faculty: p[2] || "", level: p[3] || "" }; }).filter(e => e.institution);
+const crsToText = cs => cs.map(c => (c.period || "") + " | " + c.name).join("\n");
+const textToCrs = t => linesOf(t).map(l => { const i = l.indexOf("|"); return i >= 0 ? { period: l.slice(0, i).trim(), name: l.slice(i + 1).trim() } : { period: "", name: l }; }).filter(c => c.name);
+const stripB = l => l.replace(/^[-–—•*]\s*/, "");
+function renderEditor() {
+  const d = state.data, edEl = $("#editor"); edEl.hidden = !d; if (!d) return;
+  $("#edTop").replaceChildren(
+    field("Должность в шапке", d.title, { on: v => { d.title = v; renderSummary(); } }),
+    field("Строка опыта в шапке", d.experience_line, { on: v => { d.experience_line = v; renderSummary(); }, ph: "Например: 3+ года опыта в области тестирования ПО" }));
+  $("#edSkills").replaceChildren(
+    field("Навыки: «Тестирование»", d.skills_testing.join("\n"), { area: true, min: 6, on: v => { d.skills_testing = linesOf(v).map(stripB); }, hint: "Каждый пункт с новой строки" }),
+    field("Навыки: «Ключевые технологии»", fieldsToText(d.skills_tech), { area: true, min: 6, on: v => { d.skills_tech = textToFields(v); }, hint: "Каждая строка: «Категория: инструменты»" }));
+  renderJobs();
+  $("#edEdu").replaceChildren(
+    field("Образование", eduToText(d.education), { area: true, on: v => { d.education = textToEdu(v); renderSummary(); }, hint: "Год | Учебное заведение, город | Факультет, специальность | Уровень" }),
+    field("Курсы и сертификаты", crsToText(d.courses), { area: true, on: v => { d.courses = textToCrs(v); renderSummary(); }, hint: "Год | Курс, организация" }));
+}
+function renderJobs() {
+  const d = state.data, box = $("#edJobs"); box.replaceChildren();
+  if (!d.jobs.length) { const p = document.createElement("p"); p.className = "hint"; p.textContent = "Места работы не найдены. Добавьте их кнопкой ниже."; box.append(p); }
+  d.jobs.forEach((j, idx) => {
+    const card = document.createElement("div"); card.className = "jobcard";
+    const head = document.createElement("div"); head.className = "jobhead";
+    const h = document.createElement("b"); h.textContent = `Место работы ${idx + 1}` + (j.company ? ` · ${j.company}` : ""); head.append(h);
+    const tools = document.createElement("div"); tools.className = "row";
+    const btn = (t, title, fn, dis) => { const b = document.createElement("button"); b.type = "button"; b.className = "btn ghost small"; b.textContent = t; b.title = title; b.setAttribute("aria-label", title); b.disabled = !!dis; b.addEventListener("click", fn); tools.append(b); };
+    btn("↑", "Переместить выше", () => { [d.jobs[idx - 1], d.jobs[idx]] = [d.jobs[idx], d.jobs[idx - 1]]; renderJobs(); }, idx === 0);
+    btn("↓", "Переместить ниже", () => { [d.jobs[idx + 1], d.jobs[idx]] = [d.jobs[idx], d.jobs[idx + 1]]; renderJobs(); }, idx === d.jobs.length - 1);
+    btn("Удалить", "Удалить место работы", () => { d.jobs.splice(idx, 1); renderJobs(); renderSummary(); });
+    head.append(tools); card.append(head);
+    const g = document.createElement("div"); g.className = "ed-grid";
+    g.append(
+      field("Период", j.period, { on: v => { j.period = v; }, ph: "08.2024 – по наст. время" }),
+      field("Компания и проект", j.company, { on: v => { j.company = v; h.textContent = `Место работы ${idx + 1}` + (v ? ` · ${v}` : ""); }, ph: "ЛАНИТ “Название проекта”" }),
+      field("Должность", j.role, { on: v => { j.role = v; } }),
+      field("Технологии", j.tech, { on: v => { j.tech = v; }, ph: "Jira, Postman, DBeaver (PostgreSQL)" }));
+    const g2 = document.createElement("div"); g2.className = "ed-grid3";
+    g2.append(
+      field("Обязанности", j.duties.join("\n"), { area: true, min: 6, on: v => { j.duties = linesOf(v).map(stripB); }, hint: "Каждая обязанность с новой строки" }),
+      field("О проекте", [fieldsToText(j.fields), j.description ? "Описание: " + j.description : ""].filter(Boolean).join("\n"), { area: true, min: 4, on: v => { const fs = textToFields(v); const dsc = fs.find(f => /^описание/i.test(f.label)); j.description = dsc ? dsc.value : ""; j.fields = fs.filter(f => f !== dsc && f.value); }, hint: "«Архитектура: микросервисы», «Команда: …», «Описание: …»" }),
+      field("Достижения и прочее", extrasToText(j.extras), { area: true, min: 4, on: v => { j.extras = textToExtras(v); }, hint: "Строка с двоеточием в конце — заголовок группы, ниже её пункты" }));
+    card.append(g, g2); box.append(card);
+  });
+}
+$("#edAddJob").addEventListener("click", () => { if (!state.data) return; state.data.jobs.push({ period: "", company: "", role: "", fields: [], description: "", extras: [], duties: [], tech: "" }); renderJobs(); renderSummary(); const cards = document.querySelectorAll(".jobcard"); cards[cards.length - 1]?.scrollIntoView({ behavior: "smooth", block: "center" }); });
+
 function headerOpts() { return { full: isFull(), name: $("#ovName").value.trim(), phone: $("#ovPhone").value.trim(), email: $("#ovEmail").value.trim() }; }
 function fileBase(d, o) {
   const base = o.full ? ((o.name || d.name_full).split(" ")[0] || "Кандидат") : (o.name ? shortName(o.name) : (d.name_short || shortName(d.name_full) || "Кандидат"));
   return base.replace(/[\\/:*?"<>|]/g, "").trim() || "Кандидат";
 }
 async function saveFile(kind) {
-  const d = state.data; if (!d) return;
+  if (!state.data) return;
+  const d = normalize(JSON.parse(JSON.stringify(state.data)));
+  state.busy = true; refresh();
   const btns = [$("#dl"), $("#dlPdf")]; btns.forEach(b => b.disabled = true);
   $("#dlNote").textContent = kind === "pdf" ? "Собираю PDF…" : "Собираю документ…";
   try {
     const o = headerOpts(); o.photoBytes = o.full ? await photoJpeg() : null;
     const blob = kind === "pdf" ? await buildPdf(d, o) : await buildDocx(d, o);
-    step(3, "done"); showView("done");
-    if (!downloads) { $("#dlNote").textContent = "Скачивание доступно, когда страница открыта в claude.ai."; return; }
     await downloads.save({ filename: fileBase(d, o) + (kind === "pdf" ? ".pdf" : ".docx"), data: blob });
     $("#dlNote").textContent = "Файл сохранён"; state.saved = true;
   } catch (err) {
-    const c = err?.code;
-    $("#dlNote").textContent = c === "declined" ? "Сохранение отменено. Нажмите кнопку ещё раз, чтобы сохранить." : c === "rate_limited" ? "Окно сохранения уже открыто." : c ? "Не удалось сохранить файл (" + c + ")." : "Не удалось собрать файл: " + (err?.message || err);
-  } finally { btns.forEach(b => b.disabled = false); }
+    $("#dlNote").textContent = "Не удалось собрать файл: " + (err?.message || err);
+  } finally { btns.forEach(b => b.disabled = false); state.busy = false; refresh(); }
 }
-const saveDocx = () => saveFile("docx");
-$("#dl").addEventListener("click", saveDocx);
+$("#dl").addEventListener("click", () => saveFile("docx"));
 $("#dlPdf").addEventListener("click", () => saveFile("pdf"));
 
-window.__resumeApp = { buildPdf, buildDocx, normalize, readDocx, readPdf, readLegacy, buildPrompt, lastText: () => state.text, hasPhoto: () => !!state.photo };
-const keyIn = $("#apiKey"), modelIn = $("#apiModel"), remIn = $("#apiRemember");
-keyIn.value = API.key || ""; modelIn.value = API.model; remIn.checked = !!API.remember;
-function keyState() { const k = API.key; const el = $("#keyState"); el.classList.toggle("ok", /^sk-ant-/.test(k)); el.textContent = !k ? "Ключ не введён" : /^sk-ant-/.test(k) ? "Ключ введён" : "Ключ обычно начинается с sk-ant-"; }
-keyIn.addEventListener("input", () => { API.key = keyIn.value.trim(); saveApi(); keyState(); refresh(); });
-modelIn.addEventListener("change", () => { API.model = modelIn.value; saveApi(); });
-remIn.addEventListener("change", () => { API.remember = remIn.checked; saveApi(); });
-keyState();
+window.__resumeApp = { buildPdf, buildDocx, normalize, readDocx, readPdf, readLegacy, lastText: () => state.text, hasPhoto: () => !!state.photo, data: () => state.data };
 drawPhoto(); refresh();
 })();
 </script>
 
-<footer class="foot">Конвертер работает целиком в браузере. Файлы резюме не загружаются на этот сайт: текст отправляется только в API Anthropic по вашему ключу.</footer>
+<footer class="foot">Конвертер работает целиком в браузере, без нейросетей и внешних сервисов: файлы резюме никуда не отправляются.</footer>
 </body>
 </html>
