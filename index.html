@@ -876,6 +876,7 @@ if (typeof module !== "undefined") module.exports = ResumeParser;
 (() => {
 "use strict";
 const W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+const FIRST_PAGE_LOGO = { x: 44.25, top: 12, width: 124, height: 34.5 };
 const W14 = "http://schemas.microsoft.com/office/word/2010/wordml";
 const XMLNS = "http://www.w3.org/XML/1998/namespace";
 const MED = "Montserrat Medium", REG = "Montserrat";
@@ -949,6 +950,46 @@ async function removeTemplateWatermark(zip) {
     zip.remove("word/media/image1.png");
   }
 }
+async function addFirstPageLogos(zip, pageHeight) {
+  const drawingNS = "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing";
+  const artNS = "http://schemas.openxmlformats.org/drawingml/2006/main";
+  const footer = parseXml(await zip.file("word/footer1.xml").async("string"));
+  const logoRun = desc(footer, "drawing")[0].parentNode;
+  const imageRelationship = await zip.file("word/_rels/footer1.xml.rels").async("string");
+  const toEmu = points => String(Math.round(points * 12700));
+
+  // Use the existing footer artwork in the two first-page parts of the template.
+  // Position it relative to the page so it never consumes space in the resume body.
+  const placements = [
+    { part: "header2.xml", id: 83, ...FIRST_PAGE_LOGO },
+    { part: "footer2.xml", id: 84, x: FIRST_PAGE_LOGO.x, top: pageHeight - 60.45, width: 143, height: 39.75 },
+  ];
+  for (const { part, id, x, top, width, height } of placements) {
+    const path = "word/" + part;
+    const xml = parseXml(await zip.file(path).async("string"));
+    const run = xml.importNode(logoRun, true);
+    const wp = name => run.getElementsByTagNameNS(drawingNS, name)[0];
+    const anchor = wp("anchor");
+    const anchorNS = "http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing";
+    anchor.removeAttributeNS(anchorNS, "anchorId");
+    anchor.removeAttributeNS(anchorNS, "editId");
+    for (const [name, offset] of [["positionH", x], ["positionV", top]]) {
+      const position = wp(name);
+      position.setAttribute("relativeFrom", "page");
+      position.firstElementChild.textContent = toEmu(offset);
+    }
+    for (const extent of [wp("extent"), run.getElementsByTagNameNS(artNS, "ext")[0]]) {
+      extent.setAttribute("cx", toEmu(width));
+      extent.setAttribute("cy", toEmu(height));
+    }
+    wp("wrapSquare").replaceWith(xml.createElementNS(drawingNS, "wp:wrapNone"));
+    wp("docPr").setAttribute("id", String(id));
+    wp("docPr").setAttribute("name", "ЛАНИТ Экспертиза");
+    first(xml.documentElement, "p").append(run);
+    zip.file(path, serXml(xml), { createFolders: false });
+    zip.file("word/_rels/" + part + ".rels", imageRelationship, { createFolders: false });
+  }
+}
 function fillBullets(tc, items) {
   const paras = parasOf(tc); const tpl = paras[0]; const rpr = baseRpr(tpl);
   paras.slice(1).forEach(p => p.remove());
@@ -989,9 +1030,11 @@ async function buildDocx(data, o) {
   const doc = parseXml(await zip.file("word/document.xml").async("string"));
   const body = doc.getElementsByTagNameNS(W, "body")[0];
   desc(body, "lastRenderedPageBreak").forEach(br => br.remove());
-  const margins = first(first(body, "sectPr"), "pgMar");
+  const section = first(body, "sectPr");
+  const margins = first(section, "pgMar");
   margins.setAttributeNS(W, "w:top", "1020");
   margins.setAttributeNS(W, "w:bottom", "1260");
+  await addFirstPageLogos(zip, Number(getA(first(section, "pgSz"), "h")) / 20);
 
   // header
   const ps = kids(body, "p");
@@ -1566,6 +1609,7 @@ async function buildPdf(data, o) {
 
   // page 1 header
   newPage();
+  image("Im2", FIRST_PAGE_LOGO.x, FIRST_PAGE_LOGO.top, FIRST_PAGE_LOGO.width, FIRST_PAGE_LOGO.height);
   line(LX, y, RX, y, 1, RULE); y += 7;
   const photoX = 72 + 690.95, photoW = 68.03, photoH = 90.71, photoTop = y, hasPhoto = !!(o.full && o.photoBytes);
   if (hasPhoto) image("Im3", photoX, photoTop, photoW, photoH);
@@ -1626,11 +1670,11 @@ async function buildPdf(data, o) {
   const eduHeading = data.courses.length ? "ОБРАЗОВАНИЕ И СЕРТИФИКАТЫ" : "ОБРАЗОВАНИЕ";
   eduTables.forEach((table, i) => placeTable(i === 0 ? eduHeading : "", table.x, table.rows, 2));
 
-  // Footer logo and page numbers on pages after the first.
+  // Footer logo on every page. Page numbering starts on the second page.
   pages.forEach((p, i) => {
-    if (i === 0) return;
     pg = p;
-    image("Im2", 72 - 27.75, PH - 57, 143, 39.75);
+    image("Im2", FIRST_PAGE_LOGO.x, PH - 57, 143, 39.75);
+    if (i === 0) return;
     const num = String(i + 1); text(FM, 10, NAVY, PW - 72 - FM.width(num, 10), PH - 38, num);
   });
 
