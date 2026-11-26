@@ -928,12 +928,26 @@ function cellsOf(tr) { const out = []; for (const tc of kids(tr, "tc")) { const 
 const parasOf = tc => kids(tc, "p");
 function ensurePPr(p) { let pp = first(p, "pPr"); if (!pp) { pp = mk(p, "pPr"); p.insertBefore(pp, p.firstChild); } return pp; }
 function addKeepNext(p) { const pp = ensurePPr(p); if (first(pp, "keepNext")) return; const k = mk(p, "keepNext"); const st = first(pp, "pStyle"); if (st) st.after(k); else pp.insertBefore(k, pp.firstChild); }
-function addCantSplit(tr) {
-  let pr = first(tr, "trPr");
-  if (!pr) { pr = mk(tr, "trPr"); const ex = first(tr, "tblPrEx"); if (ex) ex.after(pr); else tr.insertBefore(pr, tr.firstChild); }
-  if (first(pr, "cantSplit")) return;
-  const c = mk(tr, "cantSplit"); const nxt = ["trHeight", "tblHeader", "tblCellSpacing", "jc", "hidden", "ins", "del", "trPrChange"].map(l => first(pr, l)).find(Boolean);
-  if (nxt) pr.insertBefore(c, nxt); else pr.appendChild(c);
+async function removeTemplateWatermark(zip) {
+  const headerPath = "word/header1.xml";
+  const relsPath = "word/_rels/header1.xml.rels";
+  const header = parseXml(await zip.file(headerPath).async("string"));
+  const rels = parseXml(await zip.file(relsPath).async("string"));
+  const watermark = [...header.getElementsByTagNameNS("urn:schemas-microsoft-com:vml", "shape")]
+    .find(shape => shape.getAttribute("id")?.startsWith("WordPictureWatermark"));
+  if (!watermark) return;
+  const shapeImage = watermark.getElementsByTagNameNS(watermark.namespaceURI, "imagedata")[0];
+  const relationship = [...rels.documentElement.children].find(rel =>
+    rel.getAttribute("Id") === shapeImage?.getAttributeNS(RNS_DOC, "id") && rel.getAttribute("Target") === "media/image1.png"
+  );
+  // This image belongs to the background header. The footer uses a separate logo.
+  watermark.remove();
+  zip.file(headerPath, serXml(header), { createFolders: false });
+  if (relationship) {
+    relationship.remove();
+    zip.file(relsPath, serXml(rels), { createFolders: false });
+    zip.remove("word/media/image1.png");
+  }
 }
 function fillBullets(tc, items) {
   const paras = parasOf(tc); const tpl = paras[0]; const rpr = baseRpr(tpl);
@@ -971,11 +985,17 @@ function shortName(full) { const p = S(full).split(" "); return p.length >= 2 ? 
 /* ---------- build .docx from the template ---------- */
 async function buildDocx(data, o) {
   const zip = await JSZip.loadAsync(await templateBytes(), { createFolders: false });
+  await removeTemplateWatermark(zip);
   const doc = parseXml(await zip.file("word/document.xml").async("string"));
   const body = doc.getElementsByTagNameNS(W, "body")[0];
+  desc(body, "lastRenderedPageBreak").forEach(br => br.remove());
+  const margins = first(first(body, "sectPr"), "pgMar");
+  margins.setAttributeNS(W, "w:top", "1020");
+  margins.setAttributeNS(W, "w:bottom", "1260");
 
   // header
   const ps = kids(body, "p");
+  if (isEmptyP(ps[3])) ps[3].remove();
   const nameFull = o.name || data.name_full;
   setText(ps[1], (o.full ? nameFull : (o.name ? shortName(o.name) : (data.name_short || shortName(nameFull)))).toUpperCase());
   setText(ps[2], data.title);
@@ -989,8 +1009,11 @@ async function buildDocx(data, o) {
   }
 
   // skills
-  let T = kids(body, "tbl");
-  const sc = cellsOf(rowsOf(T[0])[1]);
+  const T = kids(body, "tbl");
+  const skillsRow = rowsOf(T[0])[1];
+  const skillsRowProperties = first(skillsRow, "trPr");
+  if (skillsRowProperties) first(skillsRowProperties, "trHeight")?.remove();
+  const sc = cellsOf(skillsRow);
   fillBullets(sc[0], data.skills_testing.map(s => [[s, null]]));
   fillBullets(sc[1], data.skills_tech.map(g => g.value ? [[withColon(g.label), MED], [" " + g.value, REG]] : [[g.label, MED]]));
 
@@ -998,10 +1021,14 @@ async function buildDocx(data, o) {
   const n = data.jobs.length;
   const blockOf = tbl => { const h = tbl.previousElementSibling; const e = h && h.previousElementSibling; return { tbl, h, e: isEmptyP(e) ? e : null }; };
   const blocks = T.slice(1, 5).map(blockOf);
+  if (!data.skills_testing.length && !data.skills_tech.length) {
+    T[0].previousElementSibling.remove();
+    T[0].remove();
+  }
   if (n < 4) for (let i = n; i < 4; i++) [blocks[i].e, blocks[i].h, blocks[i].tbl].forEach(x => x && x.remove());
   if (n > 4) { const src = blocks[3]; let anchor = src.tbl; for (let i = 4; i < n; i++) for (const x of [src.e, src.h, src.tbl]) { if (!x) continue; const c = x.cloneNode(true); stripIds(c); anchor.after(c); anchor = c; } }
-  T = kids(body, "tbl");
-  const jobT = T.slice(1, 1 + n), eduT = T[1 + n], crsT = T[2 + n];
+  const [eduT, crsT] = T.slice(5);
+  const jobT = kids(body, "tbl").filter(t => t !== T[0] && t !== eduT && t !== crsT);
 
   data.jobs.forEach((job, ji) => {
     const t = jobT[ji]; const r = rowsOf(t);
@@ -1056,17 +1083,18 @@ async function buildDocx(data, o) {
   let els = kids(body); let i = 0;
   while (i < els.length - 2) { if (isEmptyP(els[i]) && isEmptyP(els[i + 1])) { els[i].remove(); els.splice(i, 1); continue; } i++; }
 
-  // headings stay with their tables; job tables do not break between pages (except very long ones)
-  for (const p of kids(body, "p")) if (["СВЕДЕНИЯ О ТРУДОВОЙ ДЕЯТЕЛЬНОСТИ", "ОБРАЗОВАНИЕ И СЕРТИФИКАТЫ", "ОБРАЗОВАНИЕ", "ПРОФЕССИОНАЛЬНЫЕ НАВЫКИ"].includes(txt(p))) addKeepNext(p);
-  jobT.forEach((t, ti) => {
-    const long = data.jobs[ti].duties.length > 18 || (data.jobs[ti].duties.length + data.jobs[ti].extras.reduce((s, x) => s + x.items.length + 1, 0)) > 24;
-    const rs = rowsOf(t);
-    rs.forEach((tr, ri) => {
-      if (!(long && ri >= 2)) addCantSplit(tr);
-      if (ri < rs.length - 1 && !(long && ri >= 1)) for (const p of desc(tr, "p")) addKeepNext(p);
-    });
+  // Keep headings with the start of their tables, but allow long project and duties rows to flow across pages.
+  for (const p of kids(body, "p")) if (["СВЕДЕНИЯ О ТРУДОВОЙ ДЕЯТЕЛЬНОСТИ", "ОБРАЗОВАНИЕ И СЕРТИФИКАТЫ", "ОБРАЗОВАНИЕ", "ПРОФЕССИОНАЛЬНЫЕ НАВЫКИ"].includes(txt(p))) {
+    const spacer = p.previousElementSibling;
+    if (isEmptyP(spacer) && spacer.previousElementSibling?.localName === "tbl") spacer.remove();
+    addKeepNext(p);
+  }
+  for (const t of [eduT, crsT]) if (t?.parentNode) {
+    for (const tr of rowsOf(t).slice(0, 2)) for (const p of desc(tr, "p")) addKeepNext(p);
+  }
+  for (const t of jobT) {
     for (const p of desc(t, "p")) { const pp = first(p, "pPr"); if (pp && first(pp, "numPr")) { const ind = first(pp, "ind"); if (ind && getA(ind, "right") === "-238") ind.setAttributeNS(W, "w:right", "100"); } }
-  });
+  }
   const hE = kids(body, "p").find(p => ["ОБРАЗОВАНИЕ И СЕРТИФИКАТЫ", "ОБРАЗОВАНИЕ"].includes(txt(p)));
   if (hE && hE.previousElementSibling && hE.previousElementSibling.localName === "tbl") hE.previousElementSibling.after(mk(doc, "p"));
 
@@ -1452,7 +1480,7 @@ async function buildPdf(data, o) {
   const need = { R: "Montserrat|embedRegular", M: "Montserrat Medium|embedRegular", B: "Montserrat|embedBold" };
   for (const k in need) if (!tf[need[k]]) throw new Error("в шаблоне нет шрифта " + need[k]);
   const FR = mkFont(parseTTF(tf[need.R]), "Montserrat-Regular", "F1"), FM = mkFont(parseTTF(tf[need.M]), "Montserrat-Medium", "F2"), FB = mkFont(parseTTF(tf[need.B]), "Montserrat-Bold", "F3");
-  const PW = 841.7, PH = 595.45, TOP = 72, BOT = PH - 72, FULL = BOT - TOP;
+  const PW = 841.7, PH = 595.45, TOP = 51, BOT = PH - 63, FULL = BOT - TOP;
   const LX = 72 - 56.65, RX = PW - 72 + 60, TX = 72 - 57.75;
   const NAVY = "#38386D", BLACK = "#000000", RULE = "#A6A6A6";
   const f2 = v => (Math.round(v * 100) / 100).toString();
@@ -1463,7 +1491,7 @@ async function buildPdf(data, o) {
   const line = (x1, y1, x2, y2, w, color) => pg.ops.push(`${rgb(color)} RG ${w} w ${f2(x1)} ${f2(PH - y1)} m ${f2(x2)} ${f2(PH - y2)} l S`);
   const rect = (x, yy, w, h) => pg.ops.push(`0 0 0 RG 0.75 w ${f2(x)} ${f2(PH - yy - h)} ${f2(w)} ${f2(h)} re S`);
   const dot = (cx, cy, r) => { const k = 0.5523 * r, Y = PH - cy; pg.ops.push(`0 0 0 rg ${f2(cx + r)} ${f2(Y)} m ${f2(cx + r)} ${f2(Y + k)} ${f2(cx + k)} ${f2(Y + r)} ${f2(cx)} ${f2(Y + r)} c ${f2(cx - k)} ${f2(Y + r)} ${f2(cx - r)} ${f2(Y + k)} ${f2(cx - r)} ${f2(Y)} c ${f2(cx - r)} ${f2(Y - k)} ${f2(cx - k)} ${f2(Y - r)} ${f2(cx)} ${f2(Y - r)} c ${f2(cx + k)} ${f2(Y - r)} ${f2(cx + r)} ${f2(Y - k)} ${f2(cx + r)} ${f2(Y)} c f`); };
-  const image = (name, x, yy, w, h, gs) => pg.ops.push(`q ${gs ? "/" + gs + " gs " : ""}${f2(w)} 0 0 ${f2(h)} ${f2(x)} ${f2(PH - yy - h)} cm /${name} Do Q`);
+  const image = (name, x, yy, w, h) => pg.ops.push(`q ${f2(w)} 0 0 ${f2(h)} ${f2(x)} ${f2(PH - yy - h)} cm /${name} Do Q`);
 
   // text wrapping
   function wrap(runs, width) {
@@ -1510,7 +1538,7 @@ async function buildPdf(data, o) {
   }
   function placeRows(x0, rows) {
     for (let r of rows) {
-      for (let guard = 0; guard < 50; guard++) {
+      while (true) {
         if (r.h <= BOT - y + 0.01) { drawRow(x0, r); break; }
         if (!r.split && r.h <= FULL && y > TOP) { newPage(); continue; }
         const parts = splitRow(r, BOT - y);
@@ -1519,16 +1547,21 @@ async function buildPdf(data, o) {
       }
     }
   }
-  const HEAD_H = 12 * 1.22 + 12, GAP = 13;
+  const HEAD_H = 12 * 1.22 + 8, GAP = 9;
   const heading = t => { text(FB, 12, NAVY, LX, y + 12 * 0.95, t); y += HEAD_H; };
-  const rowsH = rows => rows.reduce((a, r) => a + r.h, 0);
-  function block(head, tables) {
-    if (y > TOP) y += GAP;
-    const total = (head ? HEAD_H : 0) + tables.reduce((a, t) => a + rowsH(t.rows), 0) + (tables.length - 1) * GAP;
-    const firstRows = rowsH(tables[0].rows.slice(0, 2));
-    if (y > TOP && total > BOT - y && (total <= FULL || BOT - y < HEAD_H + firstRows + 40)) newPage();
+  function placeTable(head, x, rows, headerRows = 1, gap = GAP) {
+    const headerHeight = rows.slice(0, headerRows).reduce((h, r) => h + r.h, 0);
+    const firstBodyRow = rows[headerRows];
+    const bodyStart = firstBodyRow ? (firstBodyRow.split || firstBodyRow.h > FULL
+      ? Math.max(0, ...firstBodyRow.cells.map(cell => cell.lines[0]?.h || 0)) + 2 * PADY
+      : firstBodyRow.h) : 0;
+    const start = (head ? HEAD_H : 0) + headerHeight + bodyStart;
+    if (y > TOP) {
+      if (gap + start > BOT - y + 0.01) newPage();
+      else y += gap;
+    }
     if (head) heading(head);
-    tables.forEach((t, i) => { if (i) { if (rowsH(t.rows) > BOT - y - GAP && rowsH(t.rows) <= FULL) newPage(); else y += GAP; } placeRows(t.x, t.rows); });
+    placeRows(x, rows);
   }
 
   // page 1 header
@@ -1542,7 +1575,6 @@ async function buildPdf(data, o) {
   for (const ln of wrap([{ t: nameHdr, f: FB, s: 12, c: NAVY }], lim)) { text(FB, 12, NAVY, LX, y + 12 * 0.95, ln.pieces.map(q => q.t).join("")); y += 12 * 1.22; }
   for (const ln of wrap([{ t: data.title, f: FR, s: 10, c: BLACK }], lim)) { text(FR, 10, BLACK, LX, y + 9.5, ln.pieces.map(q => q.t).join("")); y += 12.2; }
   if (o.full) for (const [lab, val] of [["Телефон: ", o.phone || data.phone], ["Email: ", o.email || data.email]]) { if (!val) continue; text(FM, 10, BLACK, LX, y + 9.5, lab); text(FR, 10, BLACK, LX + FM.width(lab, 10), y + 9.5, val); y += 12.2; }
-  y += 12.2;
   if (data.experience_line) { const right = hasPhoto && y < photoTop + photoH ? photoX - 9 : RX; text(FR, 10, BLACK, right - FR.width(data.experience_line, 10), y + 9.5, data.experience_line); y += 12.2; }
   if (hasPhoto) y = Math.max(y, photoTop + photoH);
   y += 6; line(LX, y, RX, y, 1, RULE); y += 14;
@@ -1555,7 +1587,7 @@ async function buildPdf(data, o) {
       { paras: data.skills_testing.map(t => bulletP([{ t, f: FR, s: 10, c: BLACK }], 10)) },
       { paras: data.skills_tech.map(g => bulletP(g.value ? [{ t: withColon(g.label), f: FM, s: 10, c: BLACK }, { t: " " + g.value, f: FR, s: 10, c: BLACK }] : [{ t: g.label, f: FM, s: 10, c: BLACK }], 10)) }] }
   ]);
-  if (data.skills_testing.length || data.skills_tech.length) { heading("ПРОФЕССИОНАЛЬНЫЕ НАВЫКИ"); placeRows(TX, skillsRows); }
+  if (data.skills_testing.length || data.skills_tech.length) placeTable("ПРОФЕССИОНАЛЬНЫЕ НАВЫКИ", TX, skillsRows, 1, 0);
 
   // jobs
   for (const job of data.jobs) {
@@ -1567,11 +1599,11 @@ async function buildPdf(data, o) {
     if (!about.length) about.push(P("", FR, 10, BLACK));
     const rows = [
       { cells: [{ paras: [P("ПЕРИОД", FB, 10, NAVY, "center")] }, { paras: [P(job.period, FR, 10, BLACK, "center")] }, { paras: [P(job.company, FB, 12, NAVY, "center")] }] },
-      { cells: [{ span: 2, paras: [P("О ПРОЕКТЕ", FB, 10, NAVY, "center")] }, { paras: about }] }
+      { split: true, cells: [{ span: 2, paras: [P("О ПРОЕКТЕ", FB, 10, NAVY, "center")] }, { paras: about }] }
     ];
     if (job.duties.length) rows.push({ split: true, cells: [{ span: 3, paras: [P("Обязанности:", FM, 10, BLACK), ...job.duties.map(t => bulletP([{ t, f: FR, s: 9, c: BLACK }], 9))] }] });
     if (job.tech) rows.push({ cells: [{ span: 2, paras: [P("ТЕХНОЛОГИИ", FB, 10, NAVY, "center")] }, { paras: [P(job.tech, FR, 10, BLACK)] }] });
-    block("СВЕДЕНИЯ О ТРУДОВОЙ ДЕЯТЕЛЬНОСТИ", [{ x: TX, rows: measure([90.75, 136.5, 588], rows) }]);
+    placeTable("СВЕДЕНИЯ О ТРУДОВОЙ ДЕЯТЕЛЬНОСТИ", TX, measure([90.75, 136.5, 588], rows));
   }
 
   // education and courses
@@ -1591,13 +1623,13 @@ async function buildPdf(data, o) {
       { cells: [{ span: 4, paras: [P("ПОВЫШЕНИЕ КВАЛИФИКАЦИИ", FB, 12, NAVY, "center")] }] },
       { cells: ["ПЕРИОД", "КУРС / СЕРТИФИКАТ", "ПЕРИОД", "КУРС / СЕРТИФИКАТ"].map(h => ({ paras: [P(h, FB, 10, NAVY, "center")] })) }, ...cr]) });
   }
-  if (eduTables.length) block(data.courses.length ? "ОБРАЗОВАНИЕ И СЕРТИФИКАТЫ" : "ОБРАЗОВАНИЕ", eduTables);
+  const eduHeading = data.courses.length ? "ОБРАЗОВАНИЕ И СЕРТИФИКАТЫ" : "ОБРАЗОВАНИЕ";
+  eduTables.forEach((table, i) => placeTable(i === 0 ? eduHeading : "", table.x, table.rows, 2));
 
-  // watermark and footer on pages after the first, as in the template
+  // Footer logo and page numbers on pages after the first.
   pages.forEach((p, i) => {
     if (i === 0) return;
     pg = p;
-    p.ops.unshift(`q /GS1 gs ${f2(149.4)} 0 0 ${f2(225.65)} ${f2((72 + PW - 72) / 2 - 74.7)} ${f2(PH - ((TOP + BOT) / 2 - 112.8) - 225.65)} cm /Im1 Do Q`);
     image("Im2", 72 - 27.75, PH - 57, 143, 39.75);
     const num = String(i + 1); text(FM, 10, NAVY, PW - 72 - FM.width(num, 10), PH - 38, num);
   });
@@ -1606,12 +1638,10 @@ async function buildPdf(data, o) {
   const doc = new PdfDoc();
   const catalogId = doc.alloc(), pagesId = doc.alloc(), resId = doc.alloc();
   const f1 = await embedFont(doc, FR), f2id = await embedFont(doc, FM), f3 = await embedFont(doc, FB);
-  const im1 = await pngXObject(doc, await zip.file("word/media/image1.png").async("uint8array"), 0.5);
   const im2 = await pngXObject(doc, await zip.file("word/media/image2.png").async("uint8array"), 0.5);
-  let xo = `/Im1 ${im1} 0 R /Im2 ${im2} 0 R`;
+  let xo = `/Im2 ${im2} 0 R`;
   if (hasPhoto) { const im3 = doc.add("<< /Type /XObject /Subtype /Image /Width 600 /Height 800 /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode >>", o.photoBytes); xo += ` /Im3 ${im3} 0 R`; }
-  const gs1 = doc.add("<< /Type /ExtGState /ca 0.09 /CA 0.09 >>");
-  doc.set(resId, `<< /Font << /F1 ${f1} 0 R /F2 ${f2id} 0 R /F3 ${f3} 0 R >> /XObject << ${xo} >> /ExtGState << /GS1 ${gs1} 0 R >> /ProcSet [/PDF /Text /ImageB /ImageC] >>`);
+  doc.set(resId, `<< /Font << /F1 ${f1} 0 R /F2 ${f2id} 0 R /F3 ${f3} 0 R >> /XObject << ${xo} >> /ProcSet [/PDF /Text /ImageB /ImageC] >>`);
   const kids = [];
   for (const p of pages) {
     const cs = doc.add("<< /Filter /FlateDecode >>", await deflate(new TextEncoder().encode(p.ops.join("\n"))));
